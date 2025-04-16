@@ -28,4 +28,8 @@ public class Patient {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "patient_id"))
     private List<User> users;
+
+    public boolean isPatientLinkedWithUserUuid(UUID userUuid) {
+        return getUsers().parallelStream().anyMatch(user -> user.getUserUuid().equals(userUuid));
+    }
 }

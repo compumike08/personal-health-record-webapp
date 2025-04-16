@@ -6,6 +6,7 @@ CREATE TABLE user_role (
 
 CREATE TABLE user_record (
     id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    user_uuid uuid NOT NULL UNIQUE default gen_random_uuid(),
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(300) NOT NULL UNIQUE,
     password VARCHAR(1000) NOT NULL,

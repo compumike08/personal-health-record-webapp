@@ -37,3 +37,20 @@ spring:
 logging:
   level:
     mh.michael.*: DEBUG
+
+---
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_URL}:${POSTGRES_PORT}/phr_webapp_db
+    username: ${PHR_APP_DB_USER}
+    password: ${PHR_APP_DB_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+  sql:
+    init:
+      mode: never

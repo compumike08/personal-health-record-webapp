@@ -20,7 +20,7 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private UUID patientUuid;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String patientName;
 
     @ManyToMany(fetch = FetchType.EAGER)

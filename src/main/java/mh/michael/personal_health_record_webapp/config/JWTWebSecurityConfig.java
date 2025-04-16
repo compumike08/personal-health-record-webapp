@@ -3,6 +3,7 @@ package mh.michael.personal_health_record_webapp.config;
 import mh.michael.personal_health_record_webapp.security.JwtTokenAuthorizationOncePerRequestFilter;
 import mh.michael.personal_health_record_webapp.security.JwtUnAuthorizedResponseAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     private final JwtUnAuthorizedResponseAuthenticationEntryPoint jwtUnAuthorizedResponseAuthenticationEntryPoint;
     private final UserDetailsService databaseAuthUserDetailsService;
     private final JwtTokenAuthorizationOncePerRequestFilter jwtAuthenticationTokenFilter;
@@ -68,14 +72,15 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
-        httpSecurity
-                .headers()
-                .frameOptions().sameOrigin()  //H2 Console Needs this setting
-                .cacheControl(); //disable caching
+        httpSecurity.headers().cacheControl(); //disable caching
+
+        if (activeProfile.equals("dev")) {
+            httpSecurity.headers().frameOptions().sameOrigin(); //H2 Console Needs this setting
+        }
     }
 
     @Override
-    public void configure(WebSecurity webSecurity) throws Exception {
+    public void configure(WebSecurity webSecurity) {
         webSecurity
                 .ignoring()
                 .antMatchers(
@@ -121,9 +126,12 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 )
                 .and()
                 .ignoring()
-                .antMatchers("/static/**")
-                .and()
-                .ignoring()
-                .antMatchers("/h2-console/**/**");//Should not be in Production!
+                .antMatchers("/static/**");
+
+        if (activeProfile.equals("dev")) {
+            webSecurity
+                    .ignoring()
+                    .antMatchers("/h2-console/**/**");//Should not be in Production!
+        }
     }
 }

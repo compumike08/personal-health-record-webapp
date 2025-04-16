@@ -50,7 +50,7 @@ public class JwtTokenAuthorizationOncePerRequestFilter extends OncePerRequestFil
             } catch (ExpiredJwtException e) {
                 log.warn("JWT_TOKEN_EXPIRED", e);
             }
-        } else {
+        } else if (requestTokenHeader != null) {
             log.warn("JWT_TOKEN_DOES_NOT_START_WITH_BEARER_STRING");
         }
 

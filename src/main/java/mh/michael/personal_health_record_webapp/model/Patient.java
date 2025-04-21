@@ -29,6 +29,9 @@ public class Patient {
             inverseJoinColumns = @JoinColumn(name = "patient_id"))
     private List<User> users;
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<Immunization> immunizations;
+
     public boolean isPatientLinkedWithUserUuid(UUID userUuid) {
         return getUsers().parallelStream().anyMatch(user -> user.getUserUuid().equals(userUuid));
     }

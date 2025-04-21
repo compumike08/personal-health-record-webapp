@@ -1,8 +1,7 @@
 package mh.michael.personal_health_record_webapp.util;
 
-import mh.michael.personal_health_record_webapp.dto.PatientDTO;
-import mh.michael.personal_health_record_webapp.dto.UserDTO;
-import mh.michael.personal_health_record_webapp.dto.UserNoPatientListDTO;
+import mh.michael.personal_health_record_webapp.dto.*;
+import mh.michael.personal_health_record_webapp.model.Immunization;
 import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.model.User;
 import mh.michael.personal_health_record_webapp.model.UserRole;
@@ -49,7 +48,31 @@ public class ConvertDTOUtil {
                 .build();
     }
 
+    public static PatientNoUsersDTO convertPatientToPatientNoUsersDTO(Patient patient) {
+        return PatientNoUsersDTO.builder()
+                .patientUuid(patient.getPatientUuid().toString())
+                .patientName(patient.getPatientName())
+                .build();
+    }
+
     public static List<PatientDTO> convertPatientListToPatientDTOList(List<Patient> patientList) {
         return patientList.parallelStream().map(ConvertDTOUtil::convertPatientToPatientDTO).collect(Collectors.toList());
+    }
+
+    public static ImmunizationDTO convertImmunizationToImmunizationDTO(Immunization immunization) {
+        return ImmunizationDTO.builder()
+                .id(immunization.getId())
+                .description(immunization.getDescription())
+                .immunizationDate(immunization.getImmunizationDate())
+                .immunizationName(immunization.getImmunizationName())
+                .providerName(immunization.getProviderName())
+                .providerLocation(immunization.getProviderLocation())
+                .patient(convertPatientToPatientNoUsersDTO(immunization.getPatient()))
+                .build();
+    }
+
+    public static List<ImmunizationDTO> convertImmunizationListToImmunizationDTOList(List<Immunization> immunizationList) {
+        return immunizationList.stream()
+                .map(ConvertDTOUtil::convertImmunizationToImmunizationDTO).collect(Collectors.toList());
     }
 }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
 @Service
@@ -66,7 +67,7 @@ public class ImmunizationService {
         }
 
         String immunizationDateString = newImmunizationRequestDTO.getImmunizationDate();
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ENGLISH);
         Date immunizationDate;
 
         try {

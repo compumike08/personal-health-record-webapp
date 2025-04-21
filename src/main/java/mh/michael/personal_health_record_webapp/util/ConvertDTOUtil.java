@@ -6,8 +6,12 @@ import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.model.User;
 import mh.michael.personal_health_record_webapp.model.UserRole;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+
+import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 
 public class ConvertDTOUtil {
     private ConvertDTOUtil() {}
@@ -60,10 +64,11 @@ public class ConvertDTOUtil {
     }
 
     public static ImmunizationDTO convertImmunizationToImmunizationDTO(Immunization immunization) {
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ENGLISH);
         return ImmunizationDTO.builder()
                 .id(immunization.getId())
                 .description(immunization.getDescription())
-                .immunizationDate(immunization.getImmunizationDate())
+                .immunizationDate(formatter.format(immunization.getImmunizationDate()))
                 .immunizationName(immunization.getImmunizationName())
                 .providerName(immunization.getProviderName())
                 .providerLocation(immunization.getProviderLocation())

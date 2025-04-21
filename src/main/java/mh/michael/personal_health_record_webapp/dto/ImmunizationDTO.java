@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 public class ImmunizationDTO {
     private Long id;
-    private Date immunizationDate;
+    private String immunizationDate;
     private String immunizationName;
     private String providerName;
     private String providerLocation;

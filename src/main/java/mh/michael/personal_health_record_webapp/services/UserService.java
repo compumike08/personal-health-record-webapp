@@ -11,6 +11,7 @@ import mh.michael.personal_health_record_webapp.repositories.UserRepository;
 import mh.michael.personal_health_record_webapp.repositories.UserRoleRepository;
 import mh.michael.personal_health_record_webapp.security.JwtTokenUtil;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
+import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.EmailValidationUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,17 +31,20 @@ public class UserService {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder encoder;
     private final JwtTokenUtil jwtTokenUtil;
+    private final AuthorizationUtil authorizationUtil;
 
     public UserService(
             UserRepository userRepository,
             UserRoleRepository userRoleRepository,
             PasswordEncoder encoder,
-            JwtTokenUtil jwtTokenUtil
+            JwtTokenUtil jwtTokenUtil,
+            AuthorizationUtil authorizationUtil
     ) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.encoder = encoder;
         this.jwtTokenUtil = jwtTokenUtil;
+        this.authorizationUtil = authorizationUtil;
     }
 
     private void validateUsernameAndEmail(String username, String email) {
@@ -112,14 +116,8 @@ public class UserService {
 
     @Transactional
     public UserDTO getCurrentUser(JwtUserDetails jwtUserDetails) {
-        Optional<User> optUser = userRepository.findByUsername(jwtUserDetails.getUsername());
-
-        if (optUser.isEmpty()) {
-            log.error("Unable to find user with username of: {}", jwtUserDetails.getUsername());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-        }
-
-        User user = optUser.get();
+        UUID userUuid = jwtUserDetails.getUserUuid();
+        User user = authorizationUtil.getUserByUserUuid(userUuid);
         return convertUserToUserDTO(user);
     }
 
@@ -127,7 +125,7 @@ public class UserService {
     public UserDTO editUser(UserDTO requestDTO, JwtUserDetails jwtUserDetails) {
         validateUsernameAndEmail(requestDTO.getUsername(), requestDTO.getEmail(), jwtUserDetails);
 
-        User user = userRepository.getOne(jwtUserDetails.getId());
+        User user = authorizationUtil.getUserByUserUuid(jwtUserDetails.getUserUuid());
 
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());

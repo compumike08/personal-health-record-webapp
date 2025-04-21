@@ -6,8 +6,8 @@ import mh.michael.personal_health_record_webapp.dto.PatientDTO;
 import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.model.User;
 import mh.michael.personal_health_record_webapp.repositories.PatientRepository;
-import mh.michael.personal_health_record_webapp.repositories.UserRepository;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
+import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.ConvertDTOUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,53 +16,36 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-
-import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
 @Service
 @Slf4j
 public class PatientService {
     private final PatientRepository patientRepository;
-    private final UserRepository userRepository;
+    private final AuthorizationUtil authorizationUtil;
 
-    public PatientService(PatientRepository patientRepository, UserRepository userRepository) {
+    public PatientService(
+            PatientRepository patientRepository,
+            AuthorizationUtil authorizationUtil
+    ) {
         this.patientRepository = patientRepository;
-        this.userRepository = userRepository;
+        this.authorizationUtil = authorizationUtil;
     }
 
     @Transactional
     public List<PatientDTO> getAllPatientsOfUser(JwtUserDetails jwtUserDetails) {
         UUID userUuid = jwtUserDetails.getUserUuid();
-        Optional<User> optUser = userRepository.findByUserUuid(userUuid);
-
-        if (optUser.isEmpty()) {
-            log.error("User with userUuid of {} not found", userUuid.toString());
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-
-        User user = optUser.get();
+        User user = authorizationUtil.getUserByUserUuid(userUuid);
 
         return ConvertDTOUtil.convertPatientListToPatientDTOList(user.getPatients());
     }
 
     @Transactional
-    public PatientDTO getPatientByPatientUuid(String patientUuid, JwtUserDetails jwtUserDetails) {
+    public PatientDTO getPatientByPatientUuid(String patientUuidString, JwtUserDetails jwtUserDetails) {
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
-        Optional<Patient> optPatient = patientRepository.findByPatientUuid(UUID.fromString(patientUuid));
+        UUID patientUuid = UUID.fromString(patientUuidString);
 
-        if (optPatient.isEmpty()) {
-            log.error("Patient with patientUuid of {} not found", patientUuid);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
-        }
-
-        Patient patient = optPatient.get();
-
-        if (!patient.isPatientLinkedWithUserUuid(currentUserUuid)) {
-            log.error("Patient with patientUuid of {} is not linked to current user", patientUuid);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
-        }
+        Patient patient = authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
 
         return ConvertDTOUtil.convertPatientToPatientDTO(patient);
     }
@@ -80,14 +63,8 @@ public class PatientService {
         }
 
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
-        Optional<User> optUser = userRepository.findByUserUuid(currentUserUuid);
+        User user = authorizationUtil.getUserByUserUuid(currentUserUuid);
 
-        if (optUser.isEmpty()) {
-            log.error("User with userUuid of {} not found", currentUserUuid.toString());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-        }
-
-        User user = optUser.get();
         List<User> paitentUsersList = new ArrayList<>();
         paitentUsersList.add(user);
 

@@ -2,6 +2,7 @@ package mh.michael.personal_health_record_webapp.util;
 
 import mh.michael.personal_health_record_webapp.dto.PatientDTO;
 import mh.michael.personal_health_record_webapp.dto.UserDTO;
+import mh.michael.personal_health_record_webapp.dto.UserNoPatientListDTO;
 import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.model.User;
 import mh.michael.personal_health_record_webapp.model.UserRole;
@@ -22,6 +23,20 @@ public class ConvertDTOUtil {
                 .build();
     }
 
+    public static UserNoPatientListDTO convertUserToUserNoPatientListDTO(User user) {
+        return UserNoPatientListDTO.builder()
+                .email(user.getEmail())
+                .roles(user.getRoles().parallelStream().map(UserRole::getName).collect(Collectors.toSet()))
+                .username(user.getUsername())
+                .userUuid(user.getUserUuid().toString())
+                .build();
+    }
+
+    public static List<UserNoPatientListDTO> convertUserListToUserNoPatientListDTOList(List<User> userList) {
+        return userList.parallelStream()
+                .map(ConvertDTOUtil::convertUserToUserNoPatientListDTO).collect(Collectors.toList());
+    }
+
     public static List<UserDTO> convertUserListToUserDTOList(List<User> userList) {
         return userList.parallelStream().map(ConvertDTOUtil::convertUserToUserDTO).collect(Collectors.toList());
     }
@@ -30,7 +45,7 @@ public class ConvertDTOUtil {
         return PatientDTO.builder()
                 .patientUuid(patient.getPatientUuid().toString())
                 .patientName(patient.getPatientName())
-                .usersList(convertUserListToUserDTOList(patient.getUsers()))
+                .usersList(convertUserListToUserNoPatientListDTOList(patient.getUsers()))
                 .build();
     }
 

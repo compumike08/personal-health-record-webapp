@@ -18,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 import static mh.michael.personal_health_record_webapp.util.ConvertDTOUtil.convertUserToUserDTO;
@@ -95,6 +92,7 @@ public class UserService {
                 .email(newUserRequestDTO.getEmail())
                 .password(encoder.encode(newUserRequestDTO.getPassword()))
                 .userUuid(UUID.randomUUID())
+                .patients(new ArrayList<>())
                 .build();
 
         Set<UserRole> roles = new HashSet<>();

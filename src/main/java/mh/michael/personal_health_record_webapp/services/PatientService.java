@@ -1,6 +1,7 @@
 package mh.michael.personal_health_record_webapp.services;
 
 import lombok.extern.slf4j.Slf4j;
+import mh.michael.personal_health_record_webapp.dto.NewPatientRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.PatientDTO;
 import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.model.User;
@@ -13,9 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
 @Service
 @Slf4j
@@ -29,23 +33,16 @@ public class PatientService {
     }
 
     @Transactional
-    public List<PatientDTO> getAllPatientsOfUser(String userUuid, JwtUserDetails jwtUserDetails) {
-        Optional<User> optUser = userRepository.findByUserUuid(UUID.fromString(userUuid));
+    public List<PatientDTO> getAllPatientsOfUser(JwtUserDetails jwtUserDetails) {
+        UUID userUuid = jwtUserDetails.getUserUuid();
+        Optional<User> optUser = userRepository.findByUserUuid(userUuid);
 
         if (optUser.isEmpty()) {
-            log.error("User with userUuid of {} not found", userUuid);
+            log.error("User with userUuid of {} not found", userUuid.toString());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         User user = optUser.get();
-
-        if (!userUuid.equals(jwtUserDetails.getUserUuid().toString())) {
-            log.error("Current user requested patients of a different user with userUuid of {}", userUuid);
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN,
-                    "Current user not authorized to access requested user"
-            );
-        }
 
         return ConvertDTOUtil.convertPatientListToPatientDTOList(user.getPatients());
     }
@@ -68,5 +65,39 @@ public class PatientService {
         }
 
         return ConvertDTOUtil.convertPatientToPatientDTO(patient);
+    }
+
+    @Transactional
+    public PatientDTO createPatient(NewPatientRequestDTO newPatientRequest, JwtUserDetails jwtUserDetails) {
+        if (newPatientRequest.getPatientName().isEmpty()) {
+            log.debug("Validation Error: patientName cannot be empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must enter a valid patient name");
+        }
+
+        if (newPatientRequest.getPatientName().length() > 300) {
+            log.debug("Validation Error: patientName cannot exceed 300 characters");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient name cannot exceed 300 characters");
+        }
+
+        UUID currentUserUuid = jwtUserDetails.getUserUuid();
+        Optional<User> optUser = userRepository.findByUserUuid(currentUserUuid);
+
+        if (optUser.isEmpty()) {
+            log.error("User with userUuid of {} not found", currentUserUuid.toString());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+        }
+
+        User user = optUser.get();
+        List<User> paitentUsersList = new ArrayList<>();
+        paitentUsersList.add(user);
+
+        Patient newPatient = Patient.builder()
+                .patientName(newPatientRequest.getPatientName())
+                .patientUuid(UUID.randomUUID())
+                .users(paitentUsersList)
+                .build();
+
+        Patient savedPatient = patientRepository.save(newPatient);
+        return ConvertDTOUtil.convertPatientToPatientDTO(savedPatient);
     }
 }

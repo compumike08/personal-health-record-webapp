@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 
 public class ConvertDTOUtil {
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.US);
+
     private ConvertDTOUtil() {}
 
     public static UserDTO convertUserToUserDTO(User user) {
@@ -52,27 +54,18 @@ public class ConvertDTOUtil {
                 .build();
     }
 
-    public static PatientNoUsersDTO convertPatientToPatientNoUsersDTO(Patient patient) {
-        return PatientNoUsersDTO.builder()
-                .patientUuid(patient.getPatientUuid().toString())
-                .patientName(patient.getPatientName())
-                .build();
-    }
-
     public static List<PatientDTO> convertPatientListToPatientDTOList(List<Patient> patientList) {
         return patientList.parallelStream().map(ConvertDTOUtil::convertPatientToPatientDTO).collect(Collectors.toList());
     }
 
     public static ImmunizationDTO convertImmunizationToImmunizationDTO(Immunization immunization) {
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ENGLISH);
         return ImmunizationDTO.builder()
                 .id(immunization.getId())
                 .description(immunization.getDescription())
-                .immunizationDate(formatter.format(immunization.getImmunizationDate()))
+                .immunizationDate(dateFormatter.format(immunization.getImmunizationDate()))
                 .immunizationName(immunization.getImmunizationName())
                 .providerName(immunization.getProviderName())
                 .providerLocation(immunization.getProviderLocation())
-                .patient(convertPatientToPatientNoUsersDTO(immunization.getPatient()))
                 .build();
     }
 

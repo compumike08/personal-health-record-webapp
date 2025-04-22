@@ -74,6 +74,7 @@ public class ImmunizationService {
             immunizationDate = formatter.parse(immunizationDateString);
         } catch (ParseException e) {
             log.error("Unable to parse immunization date {}", immunizationDateString);
+            log.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
         }
 

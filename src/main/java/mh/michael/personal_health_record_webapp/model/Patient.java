@@ -23,7 +23,7 @@ public class Patient {
     @Column(unique = true, nullable = false, length = 300)
     private String patientName;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(name = "patient_user",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "patient_id"))

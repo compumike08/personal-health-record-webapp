@@ -1,10 +1,7 @@
 package mh.michael.personal_health_record_webapp.util;
 
 import mh.michael.personal_health_record_webapp.dto.*;
-import mh.michael.personal_health_record_webapp.model.Immunization;
-import mh.michael.personal_health_record_webapp.model.Patient;
-import mh.michael.personal_health_record_webapp.model.User;
-import mh.michael.personal_health_record_webapp.model.UserRole;
+import mh.michael.personal_health_record_webapp.model.*;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -72,5 +69,25 @@ public class ConvertDTOUtil {
     public static List<ImmunizationDTO> convertImmunizationListToImmunizationDTOList(List<Immunization> immunizationList) {
         return immunizationList.stream()
                 .map(ConvertDTOUtil::convertImmunizationToImmunizationDTO).collect(Collectors.toList());
+    }
+
+    public static MedicationDTO convertMedicationToMedicationDTO(Medication medication) {
+        return MedicationDTO.builder()
+                .id(medication.getId())
+                .dosage(medication.getDosage())
+                .dosageUnit(medication.getDosageUnit())
+                .isCurrentlyTaking(medication.getIsCurrentlyTaking())
+                .medicationStartDate(medication.getMedicationStartDate() == null ?
+                        "" : dateFormatter.format(medication.getMedicationStartDate()))
+                .medicationEndDate(medication.getMedicationEndDate() == null ?
+                        "" : dateFormatter.format(medication.getMedicationEndDate()))
+                .medicationName(medication.getMedicationName())
+                .notes(medication.getNotes())
+                .build();
+    }
+
+    public static List<MedicationDTO> convertMedicationListToMedicationDTOList(List<Medication> medicationList) {
+        return medicationList.stream()
+                .map(ConvertDTOUtil::convertMedicationToMedicationDTO).collect(Collectors.toList());
     }
 }

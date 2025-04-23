@@ -85,6 +85,13 @@ public class UserService {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
             }
         }
+
+        Optional<User> existingUser = userRepository.findByUsername(username);
+
+        if (existingUser.isPresent()) {
+            log.debug("Username '" + username + "' already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
+        }
     }
 
     @Transactional

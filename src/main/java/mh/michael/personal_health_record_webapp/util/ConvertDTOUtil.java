@@ -57,7 +57,7 @@ public class ConvertDTOUtil {
 
     public static ImmunizationDTO convertImmunizationToImmunizationDTO(Immunization immunization) {
         return ImmunizationDTO.builder()
-                .id(immunization.getId())
+                .immunizationUuid(immunization.getImmunizationUuid().toString())
                 .description(immunization.getDescription())
                 .immunizationDate(dateFormatter.format(immunization.getImmunizationDate()))
                 .immunizationName(immunization.getImmunizationName())
@@ -73,7 +73,7 @@ public class ConvertDTOUtil {
 
     public static MedicationDTO convertMedicationToMedicationDTO(Medication medication) {
         return MedicationDTO.builder()
-                .id(medication.getId())
+                .medicationUuid(medication.getMedicationUuid().toString())
                 .dosage(medication.getDosage())
                 .dosageUnit(medication.getDosageUnit())
                 .isCurrentlyTaking(medication.getIsCurrentlyTaking())

@@ -1,5 +1,6 @@
 CREATE TABLE medication (
     id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    medication_uuid uuid NOT NULL UNIQUE default gen_random_uuid(),
     medication_name VARCHAR(500) NOT NULL,
     is_currently_taking BOOLEAN NOT NULL,
     medication_start_date TIMESTAMP,

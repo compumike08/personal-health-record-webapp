@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class ImmunizationDTO {
-    private Long id;
+    private String immunizationUuid;
     private String immunizationDate;
     private String immunizationName;
     private String providerName;

@@ -89,6 +89,7 @@ public class ImmunizationService {
         Patient patient = authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
 
         Immunization newImmunization = Immunization.builder()
+                .immunizationUuid(UUID.randomUUID())
                 .patient(patient)
                 .immunizationDate(immunizationDate)
                 .immunizationName(newImmunizationRequestDTO.getImmunizationName())

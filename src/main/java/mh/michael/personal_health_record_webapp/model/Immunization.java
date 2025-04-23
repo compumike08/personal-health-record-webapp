@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity(name = "immunization")
 @AllArgsConstructor
@@ -15,6 +16,9 @@ public class Immunization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
+    private UUID immunizationUuid;
 
     @Column(nullable = false)
     private Date immunizationDate;

@@ -1,5 +1,6 @@
 CREATE TABLE immunization (
     id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
+    immunization_uuid uuid NOT NULL UNIQUE default gen_random_uuid(),
     immunization_date TIMESTAMP NOT NULL,
     immunization_name VARCHAR(300) NOT NULL,
     provider_name VARCHAR(300),

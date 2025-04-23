@@ -117,6 +117,7 @@ public class MedicationService {
         Patient patient = authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
 
         Medication newMedication = Medication.builder()
+                .medicationUuid(UUID.randomUUID())
                 .dosage(newMedicationRequestDTO.getDosage())
                 .dosageUnit(newMedicationRequestDTO.getDosageUnit())
                 .medicationEndDate(medicationEndDate)

@@ -1,0 +1,50 @@
+import { useNavigate } from "react-router-dom";
+import { Container, Row, Col, Button } from "reactstrap";
+
+const AuthLanding = () => {
+  const navigate = useNavigate();
+
+  const handleRegisterUser = () => {
+    navigate("/registerUser");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  return (
+    <Container className="main-menu-container">
+      <Row>
+        <Col>
+          <div className="glbl-heading">What would you like to do?</div>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Button
+            color="primary"
+            className="btn-menu-cmd"
+            size="lg"
+            onClick={handleRegisterUser}
+          >
+            Register as New User
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Button
+            color="primary"
+            className="btn-menu-cmd"
+            size="lg"
+            onClick={handleLogin}
+          >
+            Login as Existing User
+          </Button>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+export default AuthLanding;

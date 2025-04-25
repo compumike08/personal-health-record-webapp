@@ -41,7 +41,7 @@ public class JwtAuthenticationRestController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "/authenticate")
+    @PostMapping(value = "/api/authenticate")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtTokenRequest authenticationRequest)
             throws AuthenticationException {
         Authentication authentication = authenticationManager.authenticate(
@@ -54,7 +54,7 @@ public class JwtAuthenticationRestController {
         return ResponseEntity.ok(new JwtTokenResponse(token));
     }
 
-    @PostMapping(value = "/refresh")
+    @PostMapping(value = "/api/refresh")
     public ResponseEntity<?> refreshAndGetAuthenticationToken(HttpServletRequest request) {
         String authToken = request.getHeader(tokenHeader);
         final String token = authToken.substring(7);
@@ -67,7 +67,7 @@ public class JwtAuthenticationRestController {
         }
     }
 
-    @PostMapping(value = "/registerUser")
+    @PostMapping(value = "/api/registerUser")
     public UserDTO registerNewUser(@RequestBody NewUserRequestDTO newUserRequestDTO) {
         return userService.createNewUser(newUserRequestDTO);
     }

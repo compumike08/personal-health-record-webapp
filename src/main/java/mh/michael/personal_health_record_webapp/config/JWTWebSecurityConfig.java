@@ -85,19 +85,19 @@ public class JWTWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers(
                         HttpMethod.POST,
-                        "/authenticate"
+                        "/api/authenticate"
                 )
                 .antMatchers(
                         HttpMethod.POST,
-                        "/registerUser"
+                        "/api/registerUser"
                 )
                 .antMatchers(
                         HttpMethod.POST,
-                        "/sendForgotPasswordEmail"
+                        "/api/sendForgotPasswordEmail"
                 )
                 .antMatchers(
                         HttpMethod.POST,
-                        "/resetPassword"
+                        "/api/resetPassword"
                 )
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .and()

@@ -65,6 +65,14 @@ public class PatientService {
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
         User user = authorizationUtil.getUserByUserUuid(currentUserUuid);
 
+        boolean isExistingPatient = user.getPatients().stream()
+                .anyMatch(patient -> patient.getPatientName().equals(newPatientRequest.getPatientName()));
+
+        if (isExistingPatient) {
+            log.debug("Validation Error: patientName already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Patient name already exists");
+        }
+
         List<User> paitentUsersList = new ArrayList<>();
         paitentUsersList.add(user);
 

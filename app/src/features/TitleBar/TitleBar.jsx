@@ -56,6 +56,15 @@ const TitleBar = () => {
                   User Profile
                 </NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink
+                  activeclassname="active-link"
+                  className="nav-link"
+                  to="/patientsList"
+                >
+                  Patients List
+                </NavLink>
+              </NavItem>
             </>
           )}
         </Nav>

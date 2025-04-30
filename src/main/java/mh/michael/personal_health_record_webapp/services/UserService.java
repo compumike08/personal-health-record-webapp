@@ -2,6 +2,7 @@ package mh.michael.personal_health_record_webapp.services;
 
 import lombok.extern.slf4j.Slf4j;
 import mh.michael.personal_health_record_webapp.constants.EUserRole;
+import mh.michael.personal_health_record_webapp.dto.EditUserRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.NewUserRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.ResetPasswordRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.UserDTO;
@@ -85,13 +86,6 @@ public class UserService {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
             }
         }
-
-        Optional<User> existingUser = userRepository.findByUsername(username);
-
-        if (existingUser.isPresent()) {
-            log.debug("Username '" + username + "' already exists");
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
-        }
     }
 
     @Transactional
@@ -129,7 +123,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO editUser(UserDTO requestDTO, JwtUserDetails jwtUserDetails) {
+    public UserDTO editUser(EditUserRequestDTO requestDTO, JwtUserDetails jwtUserDetails) {
         validateUsernameAndEmail(requestDTO.getUsername(), requestDTO.getEmail(), jwtUserDetails);
 
         User user = authorizationUtil.getUserByUserUuid(jwtUserDetails.getUserUuid());

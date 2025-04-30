@@ -1,5 +1,6 @@
 package mh.michael.personal_health_record_webapp.controllers;
 
+import mh.michael.personal_health_record_webapp.dto.EditUserRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.UserDTO;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.services.UserService;
@@ -21,9 +22,9 @@ public class UserController {
     }
 
     @PostMapping("/currentUser/editUser")
-    public UserDTO changeUsername(
+    public UserDTO editCurrentUser(
             @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
-            @RequestBody UserDTO requestDTO
+            @RequestBody EditUserRequestDTO requestDTO
     ) {
         return userService.editUser(requestDTO, jwtUserDetails);
     }

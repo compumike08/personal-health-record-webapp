@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   Container,
@@ -21,7 +20,6 @@ import {
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const reduxUsername = useSelector((state) => state.userProfileData.username);
   const reduxEmail = useSelector((state) => state.userProfileData.email);

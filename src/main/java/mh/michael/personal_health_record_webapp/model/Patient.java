@@ -25,8 +25,8 @@ public class Patient {
 
     @ManyToMany
     @JoinTable(name = "patient_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "patient_id"))
+            joinColumns = @JoinColumn(name = "patient_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)

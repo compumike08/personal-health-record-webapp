@@ -47,15 +47,6 @@ const TitleBar = () => {
         <Navbar.Toggle onClick={toggle} aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Item>
-              <Nav.Link
-                activeclassname="active-link"
-                className="nav-link"
-                to="/"
-              >
-                Register/Login Page
-              </Nav.Link>
-            </Nav.Item>
             {isUserLoggedIn && (
               <>
                 <Nav.Item>

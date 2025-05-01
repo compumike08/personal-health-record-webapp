@@ -7,6 +7,8 @@ import {
   getPatientByPatientUuidAction
 } from "../patients/patientsSlice";
 
+import "./TitleBar.css";
+
 const TitleBar = () => {
   const dispatch = useDispatch();
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -81,15 +83,6 @@ const TitleBar = () => {
                     User Profile
                   </NavLink>
                 </Nav.Item>
-                <Nav.Item>
-                  <NavLink
-                    activeclassname="active-link"
-                    className="nav-link"
-                    to="/newPatient"
-                  >
-                    New Patient
-                  </NavLink>
-                </Nav.Item>
                 {isCurrentPatientSelected && (
                   <>
                     <Nav.Item>
@@ -112,20 +105,37 @@ const TitleBar = () => {
                     </Nav.Item>
                   </>
                 )}
+                <Nav.Item>
+                  <NavLink
+                    activeclassname="active-link"
+                    className="nav-link"
+                    to="/newPatient"
+                  >
+                    New Patient
+                  </NavLink>
+                </Nav.Item>
                 {patientsList.length > 0 && (
-                  <Form onSubmit={abortSubmit}>
-                    <Form.Select onChange={handlePatientSelectChange}>
-                      <option value="">Select Patient</option>
-                      {patientsList.map((patient) => (
-                        <option
-                          key={patient.patientUuid}
-                          value={patient.patientUuid}
+                  <Nav.Item>
+                    <Form onSubmit={abortSubmit}>
+                      <Form.Group>
+                        <Form.Select
+                          className="select-nav-bar-padding"
+                          size="sm"
+                          onChange={handlePatientSelectChange}
                         >
-                          {patient.patientName}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form>
+                          <option value="">Select Patient</option>
+                          {patientsList.map((patient) => (
+                            <option
+                              key={patient.patientUuid}
+                              value={patient.patientUuid}
+                            >
+                              {patient.patientName}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </Form>
+                  </Nav.Item>
                 )}
               </>
             )}

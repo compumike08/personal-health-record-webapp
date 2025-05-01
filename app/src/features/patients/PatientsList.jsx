@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button } from "reactstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 import PatientCard from "./PatientCard";
 import { getCurrentUsersPatientsList } from "./patientsSlice";
 
@@ -28,7 +28,7 @@ const PatientsList = () => {
       </Row>
       <Row>
         <Col className="mb-3">
-          <Button color="primary" onClick={createNewPatient}>
+          <Button variant="primary" onClick={createNewPatient}>
             New Patient
           </Button>
         </Col>

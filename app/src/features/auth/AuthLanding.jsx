@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button } from "reactstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 const AuthLanding = () => {
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const AuthLanding = () => {
       <Row>
         <Col>
           <Button
-            color="primary"
+            variant="primary"
             className="btn-menu-cmd"
             size="lg"
             onClick={handleRegisterUser}
@@ -34,7 +34,7 @@ const AuthLanding = () => {
       <Row>
         <Col>
           <Button
-            color="primary"
+            variant="primary"
             className="btn-menu-cmd"
             size="lg"
             onClick={handleLogin}

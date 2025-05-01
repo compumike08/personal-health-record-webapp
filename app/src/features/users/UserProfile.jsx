@@ -1,18 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Alert,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  FormFeedback
-} from "reactstrap";
+import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import {
   getUserProfileAction,
   editUserProfileAction
@@ -99,40 +88,50 @@ const UserProfile = () => {
       {backendErrorMsg && (
         <Row>
           <Col>
-            <Alert color="danger">{backendErrorMsg}</Alert>
+            <Alert variant="danger">{backendErrorMsg}</Alert>
           </Col>
         </Row>
       )}
       <Row>
         <Col md="5">
-          <Form>
-            <FormGroup>
-              <Label for="username-input">Username</Label>
-              <Input
-                id="username-input"
+          <Form noValidate>
+            <Form.Group controlId="username-input">
+              <Form.Label>Username</Form.Label>
+              <Form.Control
                 name="username-input"
                 type="text"
-                invalid={isUsernameError}
+                isInvalid={isUsernameError}
                 value={username}
                 onChange={handleUsernameChange}
               />
-              <FormFeedback>Username is required</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-              <Label for="email-input">Email</Label>
-              <Input
-                id="email-input"
+              <Form.Control.Feedback type="invalid">
+                Username is required
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group controlId="email-input">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
                 name="email-input"
                 type="text"
-                invalid={isEmailError}
+                isInvalid={isEmailError}
                 value={email}
                 onChange={handleEmailChange}
               />
-              <FormFeedback>Email is required</FormFeedback>
-            </FormGroup>
-            <Button color="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
+              <Form.Control.Feedback type="invalid">
+                Email is required
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Row>
+              <Col>
+                <Button
+                  className="mt-3"
+                  variant="primary"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </Col>
+            </Row>
           </Form>
         </Col>
       </Row>

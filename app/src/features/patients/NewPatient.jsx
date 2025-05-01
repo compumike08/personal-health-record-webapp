@@ -1,18 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Alert,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  FormFeedback
-} from "reactstrap";
+import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { createPatient } from "./patientsSlice";
 
@@ -62,28 +51,37 @@ const NewPatient = () => {
       {backendErrorMsg && (
         <Row>
           <Col>
-            <Alert color="danger">{backendErrorMsg}</Alert>
+            <Alert variant="danger">{backendErrorMsg}</Alert>
           </Col>
         </Row>
       )}
       <Row>
         <Col md="5">
-          <Form>
-            <FormGroup>
-              <Label for="patient-name-input">Patient Name</Label>
-              <Input
-                id="patient-name-input"
+          <Form noValidate>
+            <Form.Group controlId="patient-name-input">
+              <Form.Label>Patient Name</Form.Label>
+              <Form.Control
                 name="patient-name-input"
                 type="text"
-                invalid={isPatientNameError}
+                isInvalid={isPatientNameError}
                 value={patientName}
                 onChange={handlePatientNameChange}
               />
-              <FormFeedback>Patient Name is required</FormFeedback>
-            </FormGroup>
-            <Button color="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
+              <Form.Control.Feedback type="invalid">
+                Patient Name is required
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Row>
+              <Col>
+                <Button
+                  className="mt-3"
+                  variant="primary"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              </Col>
+            </Row>
           </Form>
         </Col>
       </Row>

@@ -1,18 +1,18 @@
 import PropTypes from "prop-types";
-import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import { Card, Container, Row, Col } from "react-bootstrap";
 
 const PatientCard = ({ patientName }) => {
   return (
     <Card color="light">
-      <CardBody>
+      <Card.Body>
         <Container>
           <Row>
             <Col xs="9">
-              <CardTitle tag="h4">{patientName}</CardTitle>
+              <Card.Title tag="h4">{patientName}</Card.Title>
             </Col>
           </Row>
         </Container>
-      </CardBody>
+      </Card.Body>
     </Card>
   );
 };

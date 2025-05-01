@@ -89,6 +89,11 @@ const RegisterUser = () => {
     }
   };
 
+  const abortSubmit = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+  };
+
   return (
     <Container>
       <Row>
@@ -105,7 +110,7 @@ const RegisterUser = () => {
       )}
       <Row>
         <Col md="5">
-          <Form noValidate>
+          <Form noValidate onSubmit={abortSubmit}>
             <Form.Group controlId="username-input">
               <Form.Label>Username</Form.Label>
               <Form.Control

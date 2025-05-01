@@ -39,6 +39,11 @@ const NewPatient = () => {
     }
   };
 
+  const abortSubmit = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+  };
+
   return (
     <Container>
       <Row>
@@ -55,7 +60,7 @@ const NewPatient = () => {
       )}
       <Row>
         <Col md="5">
-          <Form noValidate>
+          <Form noValidate onSubmit={abortSubmit}>
             <Form.Group controlId="patient-name-input">
               <Form.Label>Patient Name</Form.Label>
               <Form.Control

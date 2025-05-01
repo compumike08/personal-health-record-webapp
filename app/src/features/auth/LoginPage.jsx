@@ -55,6 +55,11 @@ const LoginPage = () => {
     }
   };
 
+  const abortSubmit = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+  };
+
   return (
     <Container>
       <Row>
@@ -71,7 +76,7 @@ const LoginPage = () => {
       )}
       <Row>
         <Col md="5">
-          <Form>
+          <Form noValidate onSubmit={abortSubmit}>
             <Form.Group controlId="username-input">
               <Form.Label>Username</Form.Label>
               <Form.Control

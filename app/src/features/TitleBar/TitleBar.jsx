@@ -40,6 +40,11 @@ const TitleBar = () => {
     setSelectedPatientUuid(evt.target.value);
   };
 
+  const abortSubmit = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+  };
+
   return (
     <Navbar className="mb-3" bg="primary" data-bs-theme="dark" expand="md">
       <Container fluid>
@@ -108,7 +113,7 @@ const TitleBar = () => {
                   </>
                 )}
                 {patientsList.length > 0 && (
-                  <Form>
+                  <Form onSubmit={abortSubmit}>
                     <Form.Select onChange={handlePatientSelectChange}>
                       <option value="">Select Patient</option>
                       {patientsList.map((patient) => (

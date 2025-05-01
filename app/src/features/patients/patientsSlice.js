@@ -12,9 +12,7 @@ import {
 
 const initialState = {
   patientsList: [],
-  currentPatient: {
-    patientName: ""
-  },
+  currentPatient: null,
   getPatientsListStatus: IDLE_STATUS,
   createNewPatientStatus: IDLE_STATUS,
   getCurrentPatientStatus: IDLE_STATUS

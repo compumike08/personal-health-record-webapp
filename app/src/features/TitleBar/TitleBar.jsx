@@ -15,10 +15,10 @@ const TitleBar = () => {
 
   const isUserLoggedIn = useSelector((state) => state.authData.isUserLoggedIn);
   const patientsList = useSelector((state) => state.patientsData.patientsList);
-  const currentPatientName = useSelector(
-    (state) => state.patientsData.currentPatient.patientName
+  const currentPatient = useSelector(
+    (state) => state.patientsData.currentPatient
   );
-  const isCurrentPatientSelected = currentPatientName.length > 0;
+  const isCurrentPatientSelected = currentPatient !== null;
 
   useEffect(() => {
     if (isUserLoggedIn) {

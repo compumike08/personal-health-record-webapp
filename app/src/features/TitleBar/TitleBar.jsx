@@ -1,17 +1,44 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { Container, Navbar, Nav } from "react-bootstrap";
+import { Container, Navbar, Nav, Form } from "react-bootstrap";
+import {
+  getCurrentUsersPatientsList,
+  getPatientByPatientUuidAction
+} from "../patients/patientsSlice";
 
 const TitleBar = () => {
+  const dispatch = useDispatch();
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
+  const [selectedPatientUuid, setSelectedPatientUuid] = useState("");
   const toggle = () => setIsNavbarOpen(!isNavbarOpen);
 
   const isUserLoggedIn = useSelector((state) => state.authData.isUserLoggedIn);
+  const patientsList = useSelector((state) => state.patientsData.patientsList);
   const currentPatientName = useSelector(
     (state) => state.patientsData.currentPatient.patientName
   );
   const isCurrentPatientSelected = currentPatientName.length > 0;
+
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      dispatch(getCurrentUsersPatientsList());
+    }
+
+    if (!isUserLoggedIn) {
+      setSelectedPatientUuid("");
+    }
+  }, [isUserLoggedIn]);
+
+  useEffect(() => {
+    if (isUserLoggedIn && selectedPatientUuid.length > 0) {
+      dispatch(getPatientByPatientUuidAction(selectedPatientUuid));
+    }
+  }, [selectedPatientUuid, isUserLoggedIn]);
+
+  const handlePatientSelectChange = (evt) => {
+    setSelectedPatientUuid(evt.target.value);
+  };
 
   return (
     <Navbar className="mb-3" bg="primary" data-bs-theme="dark" expand="md">
@@ -62,9 +89,9 @@ const TitleBar = () => {
                   <NavLink
                     activeclassname="active-link"
                     className="nav-link"
-                    to="/patientsList"
+                    to="/newPatient"
                   >
-                    Patients List
+                    New Patient
                   </NavLink>
                 </Nav.Item>
                 {isCurrentPatientSelected && (
@@ -88,6 +115,21 @@ const TitleBar = () => {
                       </NavLink>
                     </Nav.Item>
                   </>
+                )}
+                {patientsList.length > 0 && (
+                  <Form>
+                    <Form.Select onChange={handlePatientSelectChange}>
+                      <option value="">Select Patient</option>
+                      {patientsList.map((patient) => (
+                        <option
+                          key={patient.patientUuid}
+                          value={patient.patientUuid}
+                        >
+                          {patient.patientName}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Form>
                 )}
               </>
             )}

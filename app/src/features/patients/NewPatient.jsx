@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { createPatient } from "./patientsSlice";
 
 const NewPatient = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const [patientName, setPatientName] = useState("");
   const [isPatientNameError, setIsPatientNameError] = useState(false);
@@ -33,7 +31,7 @@ const NewPatient = () => {
         await dispatch(createPatient(patientName)).unwrap();
 
         toast.success("New patient created successfully");
-        navigate("/patientsList");
+        setPatientName("");
       } catch (err) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);

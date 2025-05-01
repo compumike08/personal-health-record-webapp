@@ -9,7 +9,6 @@ import LogoutPage from "./features/auth/LogoutPage";
 import UserProfile from "./features/users/UserProfile";
 import PatientsList from "./features/patients/PatientsList";
 import NewPatient from "./features/patients/NewPatient";
-import CurrentPatientLanding from "./features/patients/CurrentPatientLanding";
 
 import "./App.css";
 
@@ -28,10 +27,6 @@ const App = () => {
           <Route path="/userProfile" element={<UserProfile />} />
           <Route path="/patientsList" element={<PatientsList />} />
           <Route path="/newPatient" element={<NewPatient />} />
-          <Route
-            path="/patient/:patientUuid"
-            element={<CurrentPatientLanding />}
-          />
         </Routes>
       </div>
     </Router>

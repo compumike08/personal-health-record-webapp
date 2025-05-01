@@ -7,7 +7,6 @@ import TitleBar from "./features/TitleBar/TitleBar";
 import HomePage from "./features/home/HomePage";
 import LogoutPage from "./features/auth/LogoutPage";
 import UserProfile from "./features/users/UserProfile";
-import PatientsList from "./features/patients/PatientsList";
 import NewPatient from "./features/patients/NewPatient";
 
 import "./App.css";
@@ -25,7 +24,6 @@ const App = () => {
           <Route path="/home" element={<HomePage />} />
           <Route path="/logout" element={<LogoutPage />} />
           <Route path="/userProfile" element={<UserProfile />} />
-          <Route path="/patientsList" element={<PatientsList />} />
           <Route path="/newPatient" element={<NewPatient />} />
         </Routes>
       </div>

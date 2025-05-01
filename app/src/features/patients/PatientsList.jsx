@@ -19,11 +19,15 @@ const PatientsList = () => {
     navigate("/newPatient");
   };
 
+  const handlePatientClicked = (patientUuid) => {
+    navigate(`/patient/${patientUuid}`);
+  };
+
   return (
     <Container>
       <Row>
         <Col>
-          <div className="glbl-heading">Your Patients</div>
+          <div className="glbl-heading">Select a Patient</div>
         </Col>
       </Row>
       <Row>
@@ -38,7 +42,11 @@ const PatientsList = () => {
           {patientsList.map((patient) => {
             return (
               <Row key={`patient-${patient.patientUuid}`}>
-                <Col md="3" className="mb-1">
+                <Col
+                  md="3"
+                  className="mb-1"
+                  onClick={() => handlePatientClicked(patient.patientUuid)}
+                >
                   <PatientCard patientName={patient.patientName} />
                 </Col>
               </Row>

@@ -6,13 +6,18 @@ import {
 } from "../../constants/general";
 import {
   createNewPatient,
-  getCurrentUserPatientList
+  getCurrentUserPatientList,
+  getPatientByPatientUuid
 } from "../../api/patientAPI";
 
 const initialState = {
   patientsList: [],
+  currentPatient: {
+    patientName: ""
+  },
   getPatientsListStatus: IDLE_STATUS,
-  createNewPatientStatus: IDLE_STATUS
+  createNewPatientStatus: IDLE_STATUS,
+  getCurrentPatientStatus: IDLE_STATUS
 };
 
 export const getCurrentUsersPatientsList = createAsyncThunk(
@@ -29,9 +34,21 @@ export const createPatient = createAsyncThunk(
   }
 );
 
+export const getPatientByPatientUuidAction = createAsyncThunk(
+  "patients/getPatientByPatientUuidAction",
+  async (patientUuid) => {
+    return await getPatientByPatientUuid(patientUuid);
+  }
+);
+
 export const patientsSlice = createSlice({
   name: "patients",
   initialState,
+  reducers: {
+    resetCurrentPatient(state) {
+      state.currentPatient = initialState.currentPatient;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getCurrentUsersPatientsList.pending, (state) => {
@@ -53,10 +70,21 @@ export const patientsSlice = createSlice({
       })
       .addCase(createPatient.rejected, (state) => {
         state.createNewPatientStatus = ERROR_STATUS;
+      })
+      .addCase(getPatientByPatientUuidAction.pending, (state) => {
+        state.getCurrentPatientStatus = LOADING_STATUS;
+      })
+      .addCase(getPatientByPatientUuidAction.fulfilled, (state, action) => {
+        state.getCurrentPatientStatus = IDLE_STATUS;
+        state.currentPatient = Object.assign({}, action.payload);
+      })
+      .addCase(getPatientByPatientUuidAction.rejected, (state) => {
+        state.getCurrentPatientStatus = ERROR_STATUS;
       });
   }
 });
 
-const { reducer } = patientsSlice;
+const { actions, reducer } = patientsSlice;
 
+export const { resetCurrentPatient } = actions;
 export default reducer;

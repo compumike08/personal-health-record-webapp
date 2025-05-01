@@ -8,6 +8,10 @@ const TitleBar = () => {
   const toggle = () => setIsNavbarOpen(!isNavbarOpen);
 
   const isUserLoggedIn = useSelector((state) => state.authData.isUserLoggedIn);
+  const currentPatientName = useSelector(
+    (state) => state.patientsData.currentPatient.patientName
+  );
+  const isCurrentPatientSelected = currentPatientName.length > 0;
 
   return (
     <Navbar className="mb-3" bg="primary" data-bs-theme="dark" expand="md">
@@ -63,6 +67,28 @@ const TitleBar = () => {
                     Patients List
                   </NavLink>
                 </Nav.Item>
+                {isCurrentPatientSelected && (
+                  <>
+                    <Nav.Item>
+                      <NavLink
+                        activeclassname="active-link"
+                        className="nav-link"
+                        to="/immunizations"
+                      >
+                        Immunizations
+                      </NavLink>
+                    </Nav.Item>
+                    <Nav.Item>
+                      <NavLink
+                        activeclassname="active-link"
+                        className="nav-link"
+                        to="/medications"
+                      >
+                        Medications
+                      </NavLink>
+                    </Nav.Item>
+                  </>
+                )}
               </>
             )}
           </Nav>

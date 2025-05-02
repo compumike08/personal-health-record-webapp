@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { resetAuthData } from "./authSlice";
-import { resetCurrentPatient } from "../patients/patientsSlice";
+import { resetPatientsData } from "../patients/patientsSlice";
 import { resetMedicationsList } from "../medications/medicationsSlice";
 
 const LogoutPage = () => {
@@ -10,7 +10,7 @@ const LogoutPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(resetCurrentPatient());
+    dispatch(resetPatientsData());
     dispatch(resetMedicationsList());
     dispatch(resetAuthData());
     navigate("/");

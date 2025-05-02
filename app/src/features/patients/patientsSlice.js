@@ -43,8 +43,9 @@ export const patientsSlice = createSlice({
   name: "patients",
   initialState,
   reducers: {
-    resetCurrentPatient(state) {
+    resetPatientsData(state) {
       state.currentPatient = initialState.currentPatient;
+      state.patientsList = initialState.patientsList;
     }
   },
   extraReducers: (builder) => {
@@ -84,5 +85,5 @@ export const patientsSlice = createSlice({
 
 const { actions, reducer } = patientsSlice;
 
-export const { resetCurrentPatient } = actions;
+export const { resetPatientsData } = actions;
 export default reducer;

@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
+    "dayjs": "^1.11.13",
     "idtoken-verifier": "^2.2.4",
     "lodash": "^4.17.21",
     "react": "^19.1.0",

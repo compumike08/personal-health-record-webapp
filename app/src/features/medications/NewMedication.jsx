@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
@@ -19,7 +21,7 @@ const NewMedication = () => {
     if (currentPatient !== null) {
       dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
     }
-  }, [currentPatient]);
+  }, [currentPatient, dispatch]);
 
   const handleMedNameChange = (evt) => {
     setMedName(evt.target.value);
@@ -67,7 +69,9 @@ const NewMedication = () => {
                 <Button
                   className="mt-3"
                   variant="primary"
-                  onClick={handleSubmit}
+                  onClick={() => {
+                    /* noop */
+                  }}
                 >
                   Submit
                 </Button>

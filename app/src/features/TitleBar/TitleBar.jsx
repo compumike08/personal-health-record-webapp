@@ -30,13 +30,13 @@ const TitleBar = () => {
     if (!isUserLoggedIn) {
       setSelectedPatientUuid("");
     }
-  }, [isUserLoggedIn]);
+  }, [isUserLoggedIn, dispatch]);
 
   useEffect(() => {
     if (isUserLoggedIn && selectedPatientUuid.length > 0) {
       dispatch(getPatientByPatientUuidAction(selectedPatientUuid));
     }
-  }, [selectedPatientUuid, isUserLoggedIn]);
+  }, [selectedPatientUuid, isUserLoggedIn, dispatch]);
 
   const handlePatientSelectChange = (evt) => {
     setSelectedPatientUuid(evt.target.value);

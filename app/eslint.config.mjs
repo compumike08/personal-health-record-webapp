@@ -18,12 +18,20 @@ export default [
     reactJsx
   ]),
   {
+    files: ['**/*.js', '**/*.jsx'],
     plugins: {
       "react-hooks": reactHooks
     },
     rules: {
       ...reactHooks.configs.recommended.rules
-    }
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
   },
   { ignores: ["**/dist/*"] }
 ];

@@ -14,7 +14,7 @@ const LogoutPage = () => {
     dispatch(resetMedicationsList());
     dispatch(resetAuthData());
     navigate("/");
-  }, []);
+  }, [dispatch, navigate]);
 
   return <></>;
 };

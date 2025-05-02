@@ -20,6 +20,7 @@
     "axios": "^1.9.0",
     "bootstrap": "^5.3.5",
     "idtoken-verifier": "^2.2.4",
+    "lodash": "^4.17.21",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.1.0",
@@ -45,7 +46,7 @@
   "lint-staged": {
     "*.{js,jsx,json,css,md}": [
       "prettier --write",
-      "eslint ."
+      "eslint"
     ]
   }
 }

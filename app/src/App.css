@@ -11,6 +11,7 @@
 }
 
 .glbl-heading {
-  font-size: large;
+  font-size: larger;
   margin-bottom: 15px;
+  font-weight: bold;
 }

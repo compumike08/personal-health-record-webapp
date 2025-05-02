@@ -28,7 +28,7 @@ const MedicationsList = () => {
     <Container>
       <Row>
         <Col>
-          <div className="glbl-heading">Medications List</div>
+          <h6>Medications List</h6>
         </Col>
       </Row>
       <Row>

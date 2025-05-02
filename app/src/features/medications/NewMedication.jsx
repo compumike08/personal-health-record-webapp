@@ -149,7 +149,7 @@ const NewMedication = () => {
     <Container>
       <Row>
         <Col>
-          <div className="glbl-heading">New Medication</div>
+          <h6>New Medication</h6>
         </Col>
       </Row>
       {backendErrorMsg && (

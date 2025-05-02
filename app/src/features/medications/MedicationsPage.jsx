@@ -11,7 +11,7 @@ const MedicationsPage = () => {
         </Col>
       </Row>
       <Row>
-        <Col md="6">
+        <Col md="6" className="mb-4">
           <NewMedication />
         </Col>
         <Col md="6">

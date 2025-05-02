@@ -87,7 +87,7 @@ const UserProfile = () => {
     <Container>
       <Row>
         <Col>
-          <div className="glbl-heading">Register New User</div>
+          <div className="glbl-heading">User Profile</div>
         </Col>
       </Row>
       {backendErrorMsg && (

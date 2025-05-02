@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { isNil, toNumber } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
-import {
-  getMedicationsForPatientAction,
-  createNewMedicationForPatientAction
-} from "./medicationsSlice";
+import { createNewMedicationForPatientAction } from "./medicationsSlice";
 
 dayjs.extend(customParseFormat);
 
-const NewMedication = () => {
+const NewMedication = ({ currentPatient }) => {
   const dispatch = useDispatch();
 
   const [backendErrorMsg, setBackendErrorMsg] = useState(null);
@@ -29,13 +27,8 @@ const NewMedication = () => {
   const [medDosageUnit, setMedDosageUnit] = useState("");
   const [medNotes, setMedNotes] = useState("");
 
-  const currentPatient = useSelector(
-    (state) => state.patientsData.currentPatient
-  );
-
   useEffect(() => {
     if (currentPatient !== null) {
-      dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
       reinitializeInputs();
       reinitializeValidationErrors();
     }
@@ -265,6 +258,22 @@ const NewMedication = () => {
       </Row>
     </Container>
   );
+};
+
+NewMedication.propTypes = {
+  currentPatient:
+    PropTypes.objectOf({
+      patientUuid: PropTypes.string.isRequired,
+      patientName: PropTypes.string.isRequired,
+      usersList: PropTypes.arrayOf(
+        PropTypes.objectOf({
+          userUuid: PropTypes.string.isRequired,
+          username: PropTypes.string.isRequired,
+          email: PropTypes.string.isRequired,
+          roles: PropTypes.arrayOf(PropTypes.string).isRequired
+        })
+      ).isRequired
+    }) || null
 };
 
 export default NewMedication;

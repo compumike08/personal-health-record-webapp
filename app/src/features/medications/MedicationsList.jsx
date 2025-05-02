@@ -1,29 +1,7 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { Container, Row, Col, Accordion } from "react-bootstrap";
-import { isNil } from "lodash";
-import { getMedicationsForPatientAction } from "./medicationsSlice";
 
-const MedicationsList = () => {
-  const dispatch = useDispatch();
-
-  const currentPatient = useSelector(
-    (state) => state.patientsData.currentPatient
-  );
-  const medicationsList = useSelector(
-    (state) => state.medicationsData.medicationsList
-  );
-
-  useEffect(() => {
-    if (
-      !isNil(currentPatient) &&
-      !isNil(currentPatient.patientUuid) &&
-      currentPatient.patientUuid.length > 0
-    ) {
-      dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
-    }
-  }, [dispatch, currentPatient]);
-
+const MedicationsList = ({ medicationsList }) => {
   return (
     <Container>
       <Row>
@@ -74,6 +52,21 @@ const MedicationsList = () => {
       )}
     </Container>
   );
+};
+
+MedicationsList.propTypes = {
+  medicationsList: PropTypes.arrayOf(
+    PropTypes.objectOf({
+      medicationUuid: PropTypes.string.isRequired,
+      medicationName: PropTypes.string.isRequired,
+      isCurrentlyTaking: PropTypes.bool.isRequired,
+      medicationStartDate: PropTypes.string,
+      medicationEndDate: PropTypes.string,
+      dosage: PropTypes.number,
+      dosageUnit: PropTypes.string,
+      notes: PropTypes.string
+    })
+  ).isRequired
 };
 
 export default MedicationsList;

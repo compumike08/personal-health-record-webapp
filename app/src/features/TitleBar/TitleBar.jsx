@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { NavLink } from "react-router-dom";
-import { Container, Navbar, Nav, Form } from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Container, Navbar, Nav, Form, NavDropdown } from "react-bootstrap";
 import {
   getCurrentUsersPatientsList,
   getPatientByPatientUuidAction
@@ -11,6 +11,7 @@ import "./TitleBar.css";
 
 const TitleBar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const [selectedPatientUuid, setSelectedPatientUuid] = useState("");
   const toggle = () => setIsNavbarOpen(!isNavbarOpen);
@@ -48,7 +49,13 @@ const TitleBar = () => {
   };
 
   return (
-    <Navbar className="mb-3" bg="primary" data-bs-theme="dark" expand="md">
+    <Navbar
+      collapseOnSelect
+      className="mb-3"
+      bg="primary"
+      data-bs-theme="dark"
+      expand="lg"
+    >
       <Container fluid>
         <Navbar.Brand>Personal Health Record</Navbar.Brand>
         <Navbar.Toggle onClick={toggle} aria-controls="responsive-navbar-nav" />
@@ -57,89 +64,82 @@ const TitleBar = () => {
             {isUserLoggedIn && (
               <>
                 <Nav.Item>
-                  <NavLink
-                    activeclassname="active-link"
-                    className="nav-link"
-                    to="/logout"
-                  >
-                    Logout
-                  </NavLink>
+                  <Nav.Link eventKey="1" className="p-0" as="div">
+                    <NavLink className="nav-link" to="/logout">
+                      Logout
+                    </NavLink>
+                  </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <NavLink
-                    activeclassname="active-link"
-                    className="nav-link"
-                    to="/home"
-                  >
-                    Home
-                  </NavLink>
+                  <Nav.Link eventKey="2" className="p-0" as="div">
+                    <NavLink className="nav-link" to="/home">
+                      Home
+                    </NavLink>
+                  </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <NavLink
-                    activeclassname="active-link"
-                    className="nav-link"
-                    to="/userProfile"
-                  >
-                    User Profile
-                  </NavLink>
+                  <Nav.Link eventKey="3" className="p-0" as="div">
+                    <NavLink className="nav-link" to="/userProfile">
+                      User Profile
+                    </NavLink>
+                  </Nav.Link>
                 </Nav.Item>
                 {isCurrentPatientSelected && (
-                  <>
-                    <Nav.Item>
-                      <NavLink
-                        activeclassname="active-link"
-                        className="nav-link"
-                        to="/immunizations"
-                      >
-                        Immunizations
-                      </NavLink>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <NavLink
-                        activeclassname="active-link"
-                        className="nav-link"
-                        to="/medications"
-                      >
-                        Medications
-                      </NavLink>
-                    </Nav.Item>
-                  </>
+                  <Nav.Link className="p-0" as="div">
+                    <NavDropdown
+                      title="Medical Records"
+                      id="med-records-nav-dropdown"
+                    >
+                      <Nav.Link eventKey="5" className="p-0" as="div">
+                        <NavDropdown.Item
+                          className="nav-link"
+                          onClick={() => {
+                            navigate("/immunizations");
+                          }}
+                        >
+                          Immunizations
+                        </NavDropdown.Item>
+                      </Nav.Link>
+                      <Nav.Link eventKey="6" className="p-0" as="div">
+                        <NavDropdown.Item
+                          className="nav-link"
+                          onClick={() => {
+                            navigate("/medications");
+                          }}
+                        >
+                          Medications
+                        </NavDropdown.Item>
+                      </Nav.Link>
+                    </NavDropdown>
+                  </Nav.Link>
                 )}
                 <Nav.Item>
-                  <NavLink
-                    activeclassname="active-link"
-                    className="nav-link"
-                    to="/newPatient"
-                  >
-                    New Patient
-                  </NavLink>
+                  <Nav.Link eventKey="7" className="p-0" as="div">
+                    <NavLink className="nav-link" to="/newPatient">
+                      New Patient
+                    </NavLink>
+                  </Nav.Link>
                 </Nav.Item>
-                {patientsList.length > 0 && (
-                  <Nav.Item>
-                    <Form onSubmit={abortSubmit}>
-                      <Form.Group>
-                        <Form.Select
-                          className="select-nav-bar-padding"
-                          size="sm"
-                          onChange={handlePatientSelectChange}
-                        >
-                          <option value="">Select Patient</option>
-                          {patientsList.map((patient) => (
-                            <option
-                              key={patient.patientUuid}
-                              value={patient.patientUuid}
-                            >
-                              {patient.patientName}
-                            </option>
-                          ))}
-                        </Form.Select>
-                      </Form.Group>
-                    </Form>
-                  </Nav.Item>
-                )}
               </>
             )}
           </Nav>
+          {patientsList.length > 0 && (
+            <Form onSubmit={abortSubmit} className="form-min-width">
+              <Form.Group>
+                <Form.Select size="sm" onChange={handlePatientSelectChange}>
+                  <option value="">Select Patient</option>
+                  {patientsList.map((patient) => (
+                    <option
+                      key={patient.patientUuid}
+                      value={patient.patientUuid}
+                    >
+                      {patient.patientName}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Form>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>

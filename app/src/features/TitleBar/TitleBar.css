@@ -1,4 +1,3 @@
-.select-nav-bar-padding {
-  padding-top: var(--bs-nav-link-padding-y);
-  padding-bottom: var(--bs-nav-link-padding-y);
+.form-min-width {
+  min-width: 25%;
 }

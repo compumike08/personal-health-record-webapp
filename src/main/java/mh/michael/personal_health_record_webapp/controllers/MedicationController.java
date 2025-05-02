@@ -33,4 +33,20 @@ public class MedicationController {
     ) {
         return medicationService.createMedication(newMedicationRequestDTO, jwtUserDetails);
     }
+
+    @DeleteMapping("/medication/{medicationUuid}")
+    public MedicationDTO deleteMedication(
+            @PathVariable String medicationUuid,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        return medicationService.deleteMedication(medicationUuid, jwtUserDetails);
+    }
+
+    @PutMapping("/medication")
+    public MedicationDTO updateMedication(
+            @RequestBody MedicationDTO updateMedicationDTO,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        return medicationService.updateMedication(updateMedicationDTO, jwtUserDetails);
+    }
 }

@@ -9,19 +9,14 @@ import mh.michael.personal_health_record_webapp.repositories.MedicationRepositor
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.ConvertDTOUtil;
+import mh.michael.personal_health_record_webapp.util.GeneralUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
-import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
 @Service
@@ -29,8 +24,6 @@ import static mh.michael.personal_health_record_webapp.constants.Constants.INTER
 public class MedicationService {
     private final MedicationRepository medicationRepository;
     private final AuthorizationUtil authorizationUtil;
-
-    private final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ENGLISH);
 
     public MedicationService(
             MedicationRepository medicationRepository,
@@ -73,31 +66,10 @@ public class MedicationService {
             );
         }
 
-        Date medicationStartDate = null;
-        if (newMedicationRequestDTO.getMedicationStartDate() != null &&
-                !newMedicationRequestDTO.getMedicationStartDate().isEmpty()
-        ) {
-            try {
-                medicationStartDate = dateFormatter.parse(newMedicationRequestDTO.getMedicationStartDate());
-            } catch (ParseException e) {
-                log.error("Unable to parse medicationStartDate {}", newMedicationRequestDTO.getMedicationStartDate());
-                log.error(e.getMessage(), e);
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-            }
-        }
-
-        Date medicationEndDate = null;
-        if (newMedicationRequestDTO.getMedicationEndDate() != null &&
-                !newMedicationRequestDTO.getMedicationEndDate().isEmpty()
-        ) {
-            try {
-                medicationEndDate = dateFormatter.parse(newMedicationRequestDTO.getMedicationEndDate());
-            } catch (ParseException e) {
-                log.error("Unable to parse medicationEndDate {}", newMedicationRequestDTO.getMedicationEndDate());
-                log.error(e.getMessage(), e);
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-            }
-        }
+        Date medicationStartDate = GeneralUtil
+                .parseDate(newMedicationRequestDTO.getMedicationStartDate(), null);
+        Date medicationEndDate = GeneralUtil
+                .parseDate(newMedicationRequestDTO.getMedicationEndDate(), null);
 
         if (newMedicationRequestDTO.getDosage() != null &&
                 (newMedicationRequestDTO.getDosageUnit() == null ||
@@ -131,5 +103,61 @@ public class MedicationService {
         Medication savedMedication = medicationRepository.save(newMedication);
 
         return ConvertDTOUtil.convertMedicationToMedicationDTO(savedMedication);
+    }
+
+    @Transactional
+    public MedicationDTO deleteMedication(String medicationUuidString, JwtUserDetails jwtUserDetails) {
+        UUID currentUserUuid = jwtUserDetails.getUserUuid();
+        UUID medicationUuid = UUID.fromString(medicationUuidString);
+
+        Optional<Medication> optMedication = medicationRepository.findByMedicationUuid(medicationUuid);
+
+        if (optMedication.isEmpty()) {
+            log.error("Unable to delete medication as medicationUuid {} not found", medicationUuidString);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+        }
+
+        Medication medication = optMedication.get();
+        UUID medPatientUuid = medication.getPatient().getPatientUuid();
+
+        authorizationUtil.checkUserAuthorizationForPatient(medPatientUuid, currentUserUuid);
+        medicationRepository.delete(medication);
+
+        return ConvertDTOUtil.convertMedicationToMedicationDTO(medication);
+    }
+
+    @Transactional
+    public MedicationDTO updateMedication(MedicationDTO medicationDTO, JwtUserDetails jwtUserDetails) {
+        UUID currentUserUuid = jwtUserDetails.getUserUuid();
+        UUID medicationUuid = UUID.fromString(medicationDTO.getMedicationUuid());
+
+        Optional<Medication> optMedication = medicationRepository.findByMedicationUuid(medicationUuid);
+
+        if (optMedication.isEmpty()) {
+            log.error("Unable to update medication as medicationUuid {} not found", medicationDTO.getMedicationUuid());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+        }
+
+        Medication medication = optMedication.get();
+        UUID medPatientUuid = medication.getPatient().getPatientUuid();
+
+        authorizationUtil.checkUserAuthorizationForPatient(medPatientUuid, currentUserUuid);
+
+        Date medicationStartDate = GeneralUtil
+                .parseDate(medicationDTO.getMedicationStartDate(), null);
+        Date medicationEndDate = GeneralUtil
+                .parseDate(medicationDTO.getMedicationEndDate(), null);
+
+        medication.setMedicationName(medicationDTO.getMedicationName());
+        medication.setMedicationStartDate(medicationStartDate);
+        medication.setMedicationEndDate(medicationEndDate);
+        medication.setNotes(medicationDTO.getNotes());
+        medication.setDosage(medicationDTO.getDosage());
+        medication.setDosageUnit(medicationDTO.getDosageUnit());
+        medication.setIsCurrentlyTaking(medicationDTO.getIsCurrentlyTaking());
+
+        Medication updatedMedication = medicationRepository.save(medication);
+
+        return ConvertDTOUtil.convertMedicationToMedicationDTO(updatedMedication);
     }
 }

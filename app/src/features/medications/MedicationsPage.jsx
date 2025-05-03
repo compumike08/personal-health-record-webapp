@@ -1,34 +1,46 @@
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { isNil } from "lodash";
-import NewMedication from "./NewMedication";
+import NewUpdateMedication from "./NewUpdateMedication";
 import MedicationsList from "./MedicationsList";
-import {
-  getMedicationsForPatientAction,
-  deleteMedicationAction
-} from "./medicationsSlice";
+import { deleteMedicationAction } from "./medicationsSlice";
 
 const MedicationsPage = () => {
   const dispatch = useDispatch();
 
-  const currentPatient = useSelector(
-    (state) => state.patientsData.currentPatient
-  );
-  const medicationsList = useSelector(
-    (state) => state.medicationsData.medicationsList
+  const [selectedCurrentMedUuid, setSelectedCurrentMedUuid] = useState(null);
+
+  const getMedicationsList = (state) => state.medicationsData.medicationsList;
+  const selectCurrentMedicationUuid = (_state, currentMedicationUuid) =>
+    currentMedicationUuid;
+
+  const selectCurrentMedication = createSelector(
+    [getMedicationsList, selectCurrentMedicationUuid],
+    (medicationsList, currentMedicationUuid) => {
+      if (selectedCurrentMedUuid === null) {
+        return null;
+      }
+
+      const index = medicationsList.findIndex(
+        (med) => med.medicationUuid === currentMedicationUuid
+      );
+      return medicationsList[index];
+    }
   );
 
-  useEffect(() => {
-    if (
-      !isNil(currentPatient) &&
-      !isNil(currentPatient.patientUuid) &&
-      currentPatient.patientUuid.length > 0
-    ) {
-      dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
-    }
-  }, [dispatch, currentPatient]);
+  const currentMedication = useSelector((state) =>
+    selectCurrentMedication(state, selectedCurrentMedUuid)
+  );
+
+  const onUpdateMedication = (medicationUuid) => {
+    setSelectedCurrentMedUuid(medicationUuid);
+  };
+
+  const submitComplete = () => {
+    setSelectedCurrentMedUuid(null);
+  };
 
   const onDeleteMedication = async (medicationUuid) => {
     try {
@@ -49,12 +61,23 @@ const MedicationsPage = () => {
       </Row>
       <Row>
         <Col md="6" className="mb-4">
-          <NewMedication currentPatient={currentPatient} />
+          <Row>
+            <Col>
+              <h6>New Medication</h6>
+            </Col>
+          </Row>
+          <NewUpdateMedication
+            currentMedication={currentMedication}
+            isUpdate={currentMedication !== null}
+            submitComplete={
+              currentMedication !== null ? submitComplete : undefined
+            }
+          />
         </Col>
         <Col md="6">
           <MedicationsList
-            medicationsList={medicationsList}
             onDeleteMedication={onDeleteMedication}
+            onUpdateMedication={onUpdateMedication}
           />
         </Col>
       </Row>

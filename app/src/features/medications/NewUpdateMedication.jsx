@@ -1,17 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { isNil, toNumber } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
-import { createNewMedicationForPatientAction } from "./medicationsSlice";
+import {
+  createNewMedicationForPatientAction,
+  updateMedicationAction
+} from "./medicationsSlice";
 
 dayjs.extend(customParseFormat);
 
-const NewMedication = ({ currentPatient }) => {
+const NewUpdateMedication = ({
+  submitComplete = () => {
+    /* noop */
+  },
+  isUpdate = false,
+  currentMedication = null
+}) => {
   const dispatch = useDispatch();
 
   const [backendErrorMsg, setBackendErrorMsg] = useState(null);
@@ -27,12 +36,34 @@ const NewMedication = ({ currentPatient }) => {
   const [medDosageUnit, setMedDosageUnit] = useState("");
   const [medNotes, setMedNotes] = useState("");
 
+  const currentPatient = useSelector(
+    (state) => state.patientsData.currentPatient
+  );
+
   useEffect(() => {
-    if (currentPatient !== null) {
+    if (isUpdate && !isNil(currentMedication)) {
+      setMedName(currentMedication.medicationName);
+      setIsCurrentlyTakingMed(currentMedication.isCurrentlyTaking);
+      setMedStartDateString(currentMedication.medicationStartDate);
+      setMedEndDateString(currentMedication.medicationEndDate);
+      setMedDosage(
+        isNil(currentMedication.dosage)
+          ? ""
+          : currentMedication.dosage.toString()
+      );
+      setMedDosageUnit(currentMedication.dosageUnit);
+      setMedNotes(currentMedication.notes);
+      reinitializeValidationErrors();
+    } else if (isNil(currentMedication)) {
       reinitializeInputs();
       reinitializeValidationErrors();
     }
-  }, [currentPatient, dispatch]);
+  }, [isUpdate, currentMedication]);
+
+  const handleCancel = () => {
+    reinitializeInputs();
+    reinitializeValidationErrors();
+  };
 
   const handleMedNameChange = (evt) => {
     setMedName(evt.target.value);
@@ -108,24 +139,40 @@ const NewMedication = ({ currentPatient }) => {
     }
 
     if (!isError) {
-      const data = {
-        patientUuid: currentPatient.patientUuid,
-        medicationName: medName,
-        isCurrentlyTaking: isCurrentlyTakingMed,
-        medicationStartDate: medStartDateString,
-        medicationEndDate: medEndDateString,
-        dosage: medDosage.length > 0 ? toNumber(medDosage) : null,
-        dosageUnit: medDosageUnit,
-        notes: medNotes
-      };
+      const data = isUpdate
+        ? {
+            medicationUuid: currentMedication.medicationUuid,
+            medicationName: medName,
+            isCurrentlyTaking: isCurrentlyTakingMed,
+            medicationStartDate: medStartDateString,
+            medicationEndDate: medEndDateString,
+            dosage: medDosage.length > 0 ? toNumber(medDosage) : null,
+            dosageUnit: medDosageUnit,
+            notes: medNotes
+          }
+        : {
+            patientUuid: currentPatient.patientUuid,
+            medicationName: medName,
+            isCurrentlyTaking: isCurrentlyTakingMed,
+            medicationStartDate: medStartDateString,
+            medicationEndDate: medEndDateString,
+            dosage: medDosage.length > 0 ? toNumber(medDosage) : null,
+            dosageUnit: medDosageUnit,
+            notes: medNotes
+          };
 
       try {
-        await dispatch(createNewMedicationForPatientAction(data)).unwrap();
+        if (isUpdate) {
+          await dispatch(updateMedicationAction(data)).unwrap();
+        } else {
+          await dispatch(createNewMedicationForPatientAction(data)).unwrap();
+        }
 
         reinitializeValidationErrors();
         reinitializeInputs();
 
         toast.success("Medication saved successfully");
+        submitComplete();
       } catch (err) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
@@ -140,11 +187,6 @@ const NewMedication = ({ currentPatient }) => {
 
   return (
     <Container>
-      <Row>
-        <Col>
-          <h6>New Medication</h6>
-        </Col>
-      </Row>
       {backendErrorMsg && (
         <Row>
           <Col>
@@ -244,8 +286,17 @@ const NewMedication = ({ currentPatient }) => {
             </Form.Group>
             <Row>
               <Col>
+                {isUpdate && (
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    className="mt-3"
+                  >
+                    Cancel
+                  </Button>
+                )}
                 <Button
-                  className="mt-3"
+                  className={isUpdate ? "mt-3 ms-2" : "mt-3"}
                   variant="primary"
                   onClick={handleSubmit}
                 >
@@ -260,20 +311,21 @@ const NewMedication = ({ currentPatient }) => {
   );
 };
 
-NewMedication.propTypes = {
-  currentPatient:
+NewUpdateMedication.propTypes = {
+  currentMedication:
     PropTypes.objectOf({
-      patientUuid: PropTypes.string.isRequired,
-      patientName: PropTypes.string.isRequired,
-      usersList: PropTypes.arrayOf(
-        PropTypes.objectOf({
-          userUuid: PropTypes.string.isRequired,
-          username: PropTypes.string.isRequired,
-          email: PropTypes.string.isRequired,
-          roles: PropTypes.arrayOf(PropTypes.string).isRequired
-        })
-      ).isRequired
-    }) || null
+      medicationUuid: PropTypes.string.isRequired,
+      medicationName: PropTypes.string.isRequired,
+      isCurrentlyTaking: PropTypes.bool.isRequired,
+      medicationStartDate: PropTypes.string,
+      medicationEndDate: PropTypes.string,
+      dosage: PropTypes.number,
+      dosageUnit: PropTypes.string,
+      notes: PropTypes.string
+    }) || null,
+  submitComplete: PropTypes.func,
+  isUpdate: PropTypes.bool,
+  mediciationUuid: PropTypes.string
 };
 
-export default NewMedication;
+export default NewUpdateMedication;

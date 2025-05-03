@@ -16,7 +16,13 @@ const App = () => {
   return (
     <Router>
       <div className="content">
-        <ToastContainer hideProgressBar newestOnTop limit={3} />
+        <ToastContainer
+          position="top-center"
+          hideProgressBar
+          newestOnTop
+          limit={3}
+          autoClose={3000}
+        />
         <TitleBar />
         <Routes>
           <Route exact path="/" element={<AuthLanding />} />

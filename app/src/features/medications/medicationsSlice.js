@@ -23,7 +23,7 @@ export const getMedicationsForPatientAction = createAsyncThunk(
 );
 
 export const createNewMedicationForPatientAction = createAsyncThunk(
-  "medications/createNewMedicationForPatient",
+  "medications/createNewMedicationForPatientAction",
   async (data) => {
     return await createNewMedicationForPatient(data);
   }

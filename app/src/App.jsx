@@ -18,7 +18,6 @@ const App = () => {
       <div className="content">
         <ToastContainer
           position="top-center"
-          hideProgressBar
           newestOnTop
           limit={3}
           autoClose={3000}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { registerUserAction } from "./authSlice";
 
@@ -82,8 +83,10 @@ const RegisterUser = () => {
           })
         ).unwrap();
 
+        toast.success("New user successfully registered");
         navigate("/login");
       } catch (err) {
+        toast.error(err.message);
         setBackendErrorMsg(err.message);
       }
     }

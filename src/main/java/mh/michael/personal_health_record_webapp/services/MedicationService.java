@@ -143,12 +143,34 @@ public class MedicationService {
 
         authorizationUtil.checkUserAuthorizationForPatient(medPatientUuid, currentUserUuid);
 
+        String medicationName = medicationDTO.getMedicationName();
+
+        if (medicationName == null || medicationName.isEmpty() || medicationName.length() > 500) {
+            log.debug("Validation Error: Medication name is null, empty, or greater than 500 characters long");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Medication name is required, and must not be greater than 500 characters long"
+            );
+        }
+
         Date medicationStartDate = GeneralUtil
                 .parseDate(medicationDTO.getMedicationStartDate(), null);
         Date medicationEndDate = GeneralUtil
                 .parseDate(medicationDTO.getMedicationEndDate(), null);
 
-        medication.setMedicationName(medicationDTO.getMedicationName());
+        if (medicationDTO.getDosage() != null &&
+                (medicationDTO.getDosageUnit() == null ||
+                        medicationDTO.getDosageUnit().isEmpty()
+                )
+        ) {
+            log.debug("Validation Error: Medication dosageUnit is null while dosage is not null");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "When dosage is specified, dosage unit must also be specified"
+            );
+        }
+
+        medication.setMedicationName(medicationName);
         medication.setMedicationStartDate(medicationStartDate);
         medication.setMedicationEndDate(medicationEndDate);
         medication.setNotes(medicationDTO.getNotes());

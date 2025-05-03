@@ -1,10 +1,14 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Container, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 import { isNil } from "lodash";
 import NewMedication from "./NewMedication";
 import MedicationsList from "./MedicationsList";
-import { getMedicationsForPatientAction } from "./medicationsSlice";
+import {
+  getMedicationsForPatientAction,
+  deleteMedicationAction
+} from "./medicationsSlice";
 
 const MedicationsPage = () => {
   const dispatch = useDispatch();
@@ -26,6 +30,16 @@ const MedicationsPage = () => {
     }
   }, [dispatch, currentPatient]);
 
+  const onDeleteMedication = async (medicationUuid) => {
+    try {
+      await dispatch(deleteMedicationAction(medicationUuid)).unwrap();
+
+      toast.success("Medication deleted successfully");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <Container>
       <Row>
@@ -38,7 +52,10 @@ const MedicationsPage = () => {
           <NewMedication currentPatient={currentPatient} />
         </Col>
         <Col md="6">
-          <MedicationsList medicationsList={medicationsList} />
+          <MedicationsList
+            medicationsList={medicationsList}
+            onDeleteMedication={onDeleteMedication}
+          />
         </Col>
       </Row>
     </Container>

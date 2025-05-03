@@ -23,3 +23,15 @@ export async function createNewMedicationForPatient(data) {
     throw new Error(err.response.data.message);
   }
 }
+
+export async function deleteMedication(medicationUuid) {
+  const url = `/api/medications/medication/${medicationUuid}`;
+
+  try {
+    const response = await axios.delete(url);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.response.data.message);
+  }
+}

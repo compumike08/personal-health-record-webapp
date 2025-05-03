@@ -6,13 +6,15 @@ import {
 } from "../../constants/general";
 import {
   getMedicationsForPatient,
-  createNewMedicationForPatient
+  createNewMedicationForPatient,
+  deleteMedication
 } from "../../api/medicationsAPI";
 
 const initialState = {
   medicationsList: [],
   getMedicationsForPatientStatus: IDLE_STATUS,
-  createNewMedicationForPatientStatus: IDLE_STATUS
+  createNewMedicationForPatientStatus: IDLE_STATUS,
+  deleteMedicationStatus: IDLE_STATUS
 };
 
 export const getMedicationsForPatientAction = createAsyncThunk(
@@ -26,6 +28,13 @@ export const createNewMedicationForPatientAction = createAsyncThunk(
   "medications/createNewMedicationForPatientAction",
   async (data) => {
     return await createNewMedicationForPatient(data);
+  }
+);
+
+export const deleteMedicationAction = createAsyncThunk(
+  "medications/deleteMedicationAction",
+  async (medicationUuid) => {
+    return await deleteMedication(medicationUuid);
   }
 );
 
@@ -61,6 +70,19 @@ export const medicationsSlice = createSlice({
       )
       .addCase(createNewMedicationForPatientAction.rejected, (state) => {
         state.createNewMedicationForPatientStatus = ERROR_STATUS;
+      })
+      .addCase(deleteMedicationAction.pending, (state) => {
+        state.deleteMedicationStatus = LOADING_STATUS;
+      })
+      .addCase(deleteMedicationAction.fulfilled, (state, action) => {
+        state.deleteMedicationStatus = IDLE_STATUS;
+        const index = state.medicationsList.findIndex(
+          (med) => med.medicationUuid === action.payload.medicationUuid
+        );
+        state.medicationsList.splice(index, 1);
+      })
+      .addCase(deleteMedicationAction.rejected, (state) => {
+        state.deleteMedicationStatus = ERROR_STATUS;
       });
   }
 });

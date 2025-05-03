@@ -7,14 +7,16 @@ import {
 import {
   getMedicationsForPatient,
   createNewMedicationForPatient,
-  deleteMedication
+  deleteMedication,
+  updateMedication
 } from "../../api/medicationsAPI";
 
 const initialState = {
   medicationsList: [],
   getMedicationsForPatientStatus: IDLE_STATUS,
   createNewMedicationForPatientStatus: IDLE_STATUS,
-  deleteMedicationStatus: IDLE_STATUS
+  deleteMedicationStatus: IDLE_STATUS,
+  updateMedicationStatus: IDLE_STATUS
 };
 
 export const getMedicationsForPatientAction = createAsyncThunk(
@@ -28,6 +30,13 @@ export const createNewMedicationForPatientAction = createAsyncThunk(
   "medications/createNewMedicationForPatientAction",
   async (data) => {
     return await createNewMedicationForPatient(data);
+  }
+);
+
+export const updateMedicationAction = createAsyncThunk(
+  "medications/updateMedicationAction",
+  async (data) => {
+    return await updateMedication(data);
   }
 );
 
@@ -70,6 +79,19 @@ export const medicationsSlice = createSlice({
       )
       .addCase(createNewMedicationForPatientAction.rejected, (state) => {
         state.createNewMedicationForPatientStatus = ERROR_STATUS;
+      })
+      .addCase(updateMedicationAction.pending, (state) => {
+        state.updateMedicationStatus = LOADING_STATUS;
+      })
+      .addCase(updateMedicationAction.fulfilled, (state, action) => {
+        state.updateMedicationStatus = IDLE_STATUS;
+        const index = state.medicationsList.findIndex(
+          (med) => med.medicationUuid === action.payload.medicationUuid
+        );
+        state.medicationsList[index] = action.payload;
+      })
+      .addCase(updateMedicationAction.rejected, (state) => {
+        state.updateMedicationStatus = ERROR_STATUS;
       })
       .addCase(deleteMedicationAction.pending, (state) => {
         state.deleteMedicationStatus = LOADING_STATUS;

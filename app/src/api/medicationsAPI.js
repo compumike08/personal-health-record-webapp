@@ -24,6 +24,18 @@ export async function createNewMedicationForPatient(data) {
   }
 }
 
+export async function updateMedication(data) {
+  const url = `/api/medications/medication`;
+
+  try {
+    const response = await axios.put(url, data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.response.data.message);
+  }
+}
+
 export async function deleteMedication(medicationUuid) {
   const url = `/api/medications/medication/${medicationUuid}`;
 

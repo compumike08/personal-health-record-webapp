@@ -8,5 +8,6 @@ import lombok.*;
 @Setter
 @Builder
 public class NewPatientRequestDTO {
-    private String patientName;
+
+  private String patientName;
 }

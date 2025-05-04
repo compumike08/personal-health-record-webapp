@@ -1,93 +1,102 @@
 package mh.michael.personal_health_record_webapp.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import mh.michael.personal_health_record_webapp.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Getter
 public class JwtUserDetails implements UserDetails {
-    private static final long serialVersionUID = -8535605411284956079L;
 
-    private final Long id;
-    private final UUID userUuid;
-    private final String email;
-    private final String username;
-    private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
+  private static final long serialVersionUID = -8535605411284956079L;
 
-    public JwtUserDetails(Long id, UUID userUuid, String username, String email, String password,
-                          Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.userUuid = userUuid;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-    }
+  private final Long id;
+  private final UUID userUuid;
+  private final String email;
+  private final String username;
+  private final String password;
+  private final Collection<? extends GrantedAuthority> authorities;
 
-    public static JwtUserDetails build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
+  public JwtUserDetails(
+    Long id,
+    UUID userUuid,
+    String username,
+    String email,
+    String password,
+    Collection<? extends GrantedAuthority> authorities
+  ) {
+    this.id = id;
+    this.userUuid = userUuid;
+    this.username = username;
+    this.email = email;
+    this.password = password;
+    this.authorities = authorities;
+  }
 
-        return new JwtUserDetails(
-                user.getId(),
-                user.getUserUuid(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                authorities);
-    }
+  public static JwtUserDetails build(User user) {
+    List<GrantedAuthority> authorities = user
+      .getRoles()
+      .stream()
+      .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+      .collect(Collectors.toList());
 
-    @JsonIgnore
-    public Long id() {
-        return id;
-    }
+    return new JwtUserDetails(
+      user.getId(),
+      user.getUserUuid(),
+      user.getUsername(),
+      user.getEmail(),
+      user.getPassword(),
+      authorities
+    );
+  }
 
-    @Override
-    public String getUsername() {
-        return username;
-    }
+  @JsonIgnore
+  public Long id() {
+    return id;
+  }
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public String getUsername() {
+    return username;
+  }
 
-    @JsonIgnore
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @JsonIgnore
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @JsonIgnore
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @JsonIgnore
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @JsonIgnore
-    @Override
-    public String getPassword() {
-        return password;
-    }
+  @JsonIgnore
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
+  @JsonIgnore
+  @Override
+  public String getPassword() {
+    return password;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return authorities;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

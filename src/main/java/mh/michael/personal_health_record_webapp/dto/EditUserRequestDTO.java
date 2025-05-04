@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class EditUserRequestDTO {
-    private String username;
-    private String email;
+
+  private String username;
+  private String email;
 }

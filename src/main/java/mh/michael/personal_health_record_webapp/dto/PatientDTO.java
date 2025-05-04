@@ -1,8 +1,7 @@
 package mh.michael.personal_health_record_webapp.dto;
 
-import lombok.*;
-
 import java.util.List;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,8 +9,9 @@ import java.util.List;
 @Setter
 @Builder
 public class PatientDTO {
-    private String patientUuid;
-    private String patientName;
 
-    private List<UserNoPatientListDTO> usersList;
+  private String patientUuid;
+  private String patientName;
+
+  private List<UserNoPatientListDTO> usersList;
 }

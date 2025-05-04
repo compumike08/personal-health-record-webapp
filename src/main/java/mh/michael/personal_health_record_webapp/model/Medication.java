@@ -1,10 +1,9 @@
 package mh.michael.personal_health_record_webapp.model;
 
-import lombok.*;
-
-import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
+import javax.persistence.*;
+import lombok.*;
 
 @Entity(name = "medication")
 @AllArgsConstructor
@@ -13,35 +12,36 @@ import java.util.UUID;
 @Setter
 @Builder
 public class Medication {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(nullable = false, unique = true)
-    private UUID medicationUuid;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, length = 500)
-    private String medicationName;
+  @Column(nullable = false, unique = true)
+  private UUID medicationUuid;
 
-    @Column(nullable = false)
-    private Boolean isCurrentlyTaking;
+  @Column(nullable = false, length = 500)
+  private String medicationName;
 
-    @Column
-    private Date medicationStartDate;
+  @Column(nullable = false)
+  private Boolean isCurrentlyTaking;
 
-    @Column
-    private Date medicationEndDate;
+  @Column
+  private Date medicationStartDate;
 
-    @Column
-    private Double dosage;
+  @Column
+  private Date medicationEndDate;
 
-    @Column(length = 100)
-    private String dosageUnit;
+  @Column
+  private Double dosage;
 
-    @Column(length = 5000)
-    private String notes;
+  @Column(length = 100)
+  private String dosageUnit;
 
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
-    private Patient patient;
+  @Column(length = 5000)
+  private String notes;
+
+  @ManyToOne
+  @JoinColumn(name = "patient_id")
+  private Patient patient;
 }

@@ -1,9 +1,8 @@
 package mh.michael.personal_health_record_webapp.dto;
 
+import java.util.Set;
 import lombok.*;
 import mh.michael.personal_health_record_webapp.constants.EUserRole;
-
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,8 +10,9 @@ import java.util.Set;
 @Setter
 @Builder
 public class UserNoPatientListDTO {
-    private String userUuid;
-    private String username;
-    private String email;
-    private Set<EUserRole> roles;
+
+  private String userUuid;
+  private String username;
+  private String email;
+  private Set<EUserRole> roles;
 }

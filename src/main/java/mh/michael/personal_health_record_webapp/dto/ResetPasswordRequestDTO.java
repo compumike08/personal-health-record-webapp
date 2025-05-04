@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 public class ResetPasswordRequestDTO {
-    private String forgotPasswordToken;
-    private String newPassword;
+
+  private String forgotPasswordToken;
+  private String newPassword;
 }

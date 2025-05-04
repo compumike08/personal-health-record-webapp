@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class PersonalHealthRecordWebappApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PersonalHealthRecordWebappApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(PersonalHealthRecordWebappApplication.class, args);
+  }
 }

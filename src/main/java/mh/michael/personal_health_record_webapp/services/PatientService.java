@@ -1,5 +1,8 @@
 package mh.michael.personal_health_record_webapp.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import mh.michael.personal_health_record_webapp.dto.NewPatientRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.PatientDTO;
@@ -14,75 +17,94 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 @Service
 @Slf4j
 public class PatientService {
-    private final PatientRepository patientRepository;
-    private final AuthorizationUtil authorizationUtil;
 
-    public PatientService(
-            PatientRepository patientRepository,
-            AuthorizationUtil authorizationUtil
-    ) {
-        this.patientRepository = patientRepository;
-        this.authorizationUtil = authorizationUtil;
+  private final PatientRepository patientRepository;
+  private final AuthorizationUtil authorizationUtil;
+
+  public PatientService(
+    PatientRepository patientRepository,
+    AuthorizationUtil authorizationUtil
+  ) {
+    this.patientRepository = patientRepository;
+    this.authorizationUtil = authorizationUtil;
+  }
+
+  @Transactional
+  public List<PatientDTO> getAllPatientsOfUser(JwtUserDetails jwtUserDetails) {
+    UUID userUuid = jwtUserDetails.getUserUuid();
+    User user = authorizationUtil.getUserByUserUuid(userUuid);
+
+    return ConvertDTOUtil.convertPatientListToPatientDTOList(user.getPatients());
+  }
+
+  @Transactional
+  public PatientDTO getPatientByPatientUuid(
+    String patientUuidString,
+    JwtUserDetails jwtUserDetails
+  ) {
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    UUID patientUuid = UUID.fromString(patientUuidString);
+
+    Patient patient = authorizationUtil.checkUserAuthorizationForPatient(
+      patientUuid,
+      currentUserUuid
+    );
+
+    return ConvertDTOUtil.convertPatientToPatientDTO(patient);
+  }
+
+  @Transactional
+  public PatientDTO createPatient(
+    NewPatientRequestDTO newPatientRequest,
+    JwtUserDetails jwtUserDetails
+  ) {
+    if (newPatientRequest.getPatientName().isEmpty()) {
+      log.debug("Validation Error: patientName cannot be empty");
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "You must enter a valid patient name"
+      );
     }
 
-    @Transactional
-    public List<PatientDTO> getAllPatientsOfUser(JwtUserDetails jwtUserDetails) {
-        UUID userUuid = jwtUserDetails.getUserUuid();
-        User user = authorizationUtil.getUserByUserUuid(userUuid);
-
-        return ConvertDTOUtil.convertPatientListToPatientDTOList(user.getPatients());
+    if (newPatientRequest.getPatientName().length() > 300) {
+      log.debug("Validation Error: patientName cannot exceed 300 characters");
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Patient name cannot exceed 300 characters"
+      );
     }
 
-    @Transactional
-    public PatientDTO getPatientByPatientUuid(String patientUuidString, JwtUserDetails jwtUserDetails) {
-        UUID currentUserUuid = jwtUserDetails.getUserUuid();
-        UUID patientUuid = UUID.fromString(patientUuidString);
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    User user = authorizationUtil.getUserByUserUuid(currentUserUuid);
 
-        Patient patient = authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+    boolean isExistingPatient = user
+      .getPatients()
+      .stream()
+      .anyMatch(patient ->
+        patient.getPatientName().equals(newPatientRequest.getPatientName())
+      );
 
-        return ConvertDTOUtil.convertPatientToPatientDTO(patient);
+    if (isExistingPatient) {
+      log.debug("Validation Error: patientName already exists");
+      throw new ResponseStatusException(
+        HttpStatus.CONFLICT,
+        "Patient name already exists"
+      );
     }
 
-    @Transactional
-    public PatientDTO createPatient(NewPatientRequestDTO newPatientRequest, JwtUserDetails jwtUserDetails) {
-        if (newPatientRequest.getPatientName().isEmpty()) {
-            log.debug("Validation Error: patientName cannot be empty");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must enter a valid patient name");
-        }
+    List<User> paitentUsersList = new ArrayList<>();
+    paitentUsersList.add(user);
 
-        if (newPatientRequest.getPatientName().length() > 300) {
-            log.debug("Validation Error: patientName cannot exceed 300 characters");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Patient name cannot exceed 300 characters");
-        }
+    Patient newPatient = Patient.builder()
+      .patientName(newPatientRequest.getPatientName())
+      .patientUuid(UUID.randomUUID())
+      .users(paitentUsersList)
+      .build();
 
-        UUID currentUserUuid = jwtUserDetails.getUserUuid();
-        User user = authorizationUtil.getUserByUserUuid(currentUserUuid);
-
-        boolean isExistingPatient = user.getPatients().stream()
-                .anyMatch(patient -> patient.getPatientName().equals(newPatientRequest.getPatientName()));
-
-        if (isExistingPatient) {
-            log.debug("Validation Error: patientName already exists");
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Patient name already exists");
-        }
-
-        List<User> paitentUsersList = new ArrayList<>();
-        paitentUsersList.add(user);
-
-        Patient newPatient = Patient.builder()
-                .patientName(newPatientRequest.getPatientName())
-                .patientUuid(UUID.randomUUID())
-                .users(paitentUsersList)
-                .build();
-
-        Patient savedPatient = patientRepository.save(newPatient);
-        return ConvertDTOUtil.convertPatientToPatientDTO(savedPatient);
-    }
+    Patient savedPatient = patientRepository.save(newPatient);
+    return ConvertDTOUtil.convertPatientToPatientDTO(savedPatient);
+  }
 }

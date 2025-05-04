@@ -8,12 +8,13 @@ import lombok.*;
 @Setter
 @Builder
 public class MedicationDTO {
-    private String medicationUuid;
-    private String medicationName;
-    private boolean isCurrentlyTaking;
-    private String medicationStartDate;
-    private String medicationEndDate;
-    private Double dosage;
-    private String dosageUnit;
-    private String notes;
+
+  private String medicationUuid;
+  private String medicationName;
+  private boolean isCurrentlyTaking;
+  private String medicationStartDate;
+  private String medicationEndDate;
+  private Double dosage;
+  private String dosageUnit;
+  private String notes;
 }

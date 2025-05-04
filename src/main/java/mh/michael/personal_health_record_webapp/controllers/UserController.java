@@ -10,22 +10,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+  private final UserService userService;
 
-    @GetMapping("/currentUser")
-    public UserDTO getCurrentUser(@AuthenticationPrincipal JwtUserDetails jwtUserDetails) {
-        return userService.getCurrentUser(jwtUserDetails);
-    }
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
-    @PostMapping("/currentUser/editUser")
-    public UserDTO editCurrentUser(
-            @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
-            @RequestBody EditUserRequestDTO requestDTO
-    ) {
-        return userService.editUser(requestDTO, jwtUserDetails);
-    }
+  @GetMapping("/currentUser")
+  public UserDTO getCurrentUser(@AuthenticationPrincipal JwtUserDetails jwtUserDetails) {
+    return userService.getCurrentUser(jwtUserDetails);
+  }
+
+  @PostMapping("/currentUser/editUser")
+  public UserDTO editCurrentUser(
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails,
+    @RequestBody EditUserRequestDTO requestDTO
+  ) {
+    return userService.editUser(requestDTO, jwtUserDetails);
+  }
 }

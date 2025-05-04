@@ -63,7 +63,11 @@ const MedicationsPage = () => {
         <Col md="6" className="mb-4">
           <Row>
             <Col>
-              <h6>New Medication</h6>
+              <h6>
+                {currentMedication !== null
+                  ? "Update Medication"
+                  : "New Medication"}
+              </h6>
             </Col>
           </Row>
           <NewUpdateMedication

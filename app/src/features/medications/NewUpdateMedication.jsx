@@ -54,11 +54,15 @@ const NewUpdateMedication = ({
       setMedDosageUnit(currentMedication.dosageUnit);
       setMedNotes(currentMedication.notes);
       reinitializeValidationErrors();
-    } else if (isNil(currentMedication)) {
+    } else if (isUpdate && isNil(currentMedication)) {
       reinitializeInputs();
       reinitializeValidationErrors();
+
+      if (isUpdate) {
+        submitComplete();
+      }
     }
-  }, [isUpdate, currentMedication]);
+  }, [isUpdate, currentMedication, submitComplete]);
 
   const handleCancel = () => {
     reinitializeInputs();

@@ -56,32 +56,16 @@ public class MedicationService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
         }
 
-        String medicationName = newMedicationRequestDTO.getMedicationName();
-
-        if (medicationName == null || medicationName.isEmpty() || medicationName.length() > 500) {
-            log.debug("Validation Error: Medication name is null, empty, or greater than 500 characters long");
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Medication name is required, and must not be greater than 500 characters long"
-            );
-        }
+        validateMedNameAndDosage(
+                newMedicationRequestDTO.getMedicationName(),
+                newMedicationRequestDTO.getDosage(),
+                newMedicationRequestDTO.getDosageUnit()
+        );
 
         Date medicationStartDate = GeneralUtil
                 .parseDate(newMedicationRequestDTO.getMedicationStartDate(), null);
         Date medicationEndDate = GeneralUtil
                 .parseDate(newMedicationRequestDTO.getMedicationEndDate(), null);
-
-        if (newMedicationRequestDTO.getDosage() != null &&
-                (newMedicationRequestDTO.getDosageUnit() == null ||
-                        newMedicationRequestDTO.getDosageUnit().isEmpty()
-                )
-        ) {
-            log.debug("Validation Error: Medication dosageUnit is null while dosage is not null");
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "When dosage is specified, dosage unit must also be specified"
-            );
-        }
 
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
         UUID patientUuid = UUID.fromString(newMedicationRequestDTO.getPatientUuid());
@@ -94,7 +78,7 @@ public class MedicationService {
                 .dosageUnit(newMedicationRequestDTO.getDosageUnit())
                 .medicationEndDate(medicationEndDate)
                 .medicationStartDate(medicationStartDate)
-                .medicationName(medicationName)
+                .medicationName(newMedicationRequestDTO.getMedicationName())
                 .notes(newMedicationRequestDTO.getNotes())
                 .isCurrentlyTaking(newMedicationRequestDTO.getIsCurrentlyTaking())
                 .patient(patient)
@@ -126,6 +110,24 @@ public class MedicationService {
         return ConvertDTOUtil.convertMedicationToMedicationDTO(medication);
     }
 
+    private void validateMedNameAndDosage(String medicationName, Double dosage, String dosageUnit) {
+        if (medicationName == null || medicationName.isEmpty() || medicationName.length() > 500) {
+            log.debug("Validation Error: Medication name is null, empty, or greater than 500 characters long");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Medication name is required, and must not be greater than 500 characters long"
+            );
+        }
+
+        if (dosage != null && (dosageUnit == null || dosageUnit.isEmpty())) {
+            log.debug("Validation Error: Medication dosageUnit is null while dosage is not null");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "When dosage is specified, dosage unit must also be specified"
+            );
+        }
+    }
+
     @Transactional
     public MedicationDTO updateMedication(MedicationDTO medicationDTO, JwtUserDetails jwtUserDetails) {
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
@@ -143,34 +145,18 @@ public class MedicationService {
 
         authorizationUtil.checkUserAuthorizationForPatient(medPatientUuid, currentUserUuid);
 
-        String medicationName = medicationDTO.getMedicationName();
-
-        if (medicationName == null || medicationName.isEmpty() || medicationName.length() > 500) {
-            log.debug("Validation Error: Medication name is null, empty, or greater than 500 characters long");
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Medication name is required, and must not be greater than 500 characters long"
-            );
-        }
+        validateMedNameAndDosage(
+                medicationDTO.getMedicationName(),
+                medicationDTO.getDosage(),
+                medicationDTO.getDosageUnit()
+        );
 
         Date medicationStartDate = GeneralUtil
                 .parseDate(medicationDTO.getMedicationStartDate(), null);
         Date medicationEndDate = GeneralUtil
                 .parseDate(medicationDTO.getMedicationEndDate(), null);
 
-        if (medicationDTO.getDosage() != null &&
-                (medicationDTO.getDosageUnit() == null ||
-                        medicationDTO.getDosageUnit().isEmpty()
-                )
-        ) {
-            log.debug("Validation Error: Medication dosageUnit is null while dosage is not null");
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "When dosage is specified, dosage unit must also be specified"
-            );
-        }
-
-        medication.setMedicationName(medicationName);
+        medication.setMedicationName(medicationDTO.getMedicationName());
         medication.setMedicationStartDate(medicationStartDate);
         medication.setMedicationEndDate(medicationEndDate);
         medication.setNotes(medicationDTO.getNotes());

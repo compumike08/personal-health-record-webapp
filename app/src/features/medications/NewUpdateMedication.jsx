@@ -63,6 +63,10 @@ const NewUpdateMedication = ({
   const handleCancel = () => {
     reinitializeInputs();
     reinitializeValidationErrors();
+
+    if (isUpdate) {
+      submitComplete();
+    }
   };
 
   const handleMedNameChange = (evt) => {

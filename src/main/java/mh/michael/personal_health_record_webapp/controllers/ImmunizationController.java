@@ -33,4 +33,13 @@ public class ImmunizationController {
     ) {
         return immunizationService.createImmunization(newImmunizationRequestDTO, jwtUserDetails);
     }
+
+    @DeleteMapping("/immunization/{immunizationUuid}")
+    public ImmunizationDTO deleteImmunization(
+            @PathVariable String immunizationUuid,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        return immunizationService.deleteImmunization(immunizationUuid, jwtUserDetails);
+    }
+
 }

@@ -9,19 +9,14 @@ import mh.michael.personal_health_record_webapp.repositories.ImmunizationReposit
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.ConvertDTOUtil;
+import mh.michael.personal_health_record_webapp.util.GeneralUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
-import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
 @Service
@@ -51,6 +46,23 @@ public class ImmunizationService {
         return ConvertDTOUtil.convertImmunizationListToImmunizationDTOList(immunizationList);
     }
 
+    private Date validateImmunizationInputs(
+            String immunizationDateString,
+            String immunizationName
+    ) {
+        if (immunizationName.isEmpty()) {
+            log.debug("Validation Error: immunizationName is empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must specify a immunization name");
+        }
+
+        if (immunizationDateString.isEmpty()) {
+            log.debug("Validation Error: immunizationDate is empty");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must specify an immunization date");
+        }
+
+        return GeneralUtil.parseDate(immunizationDateString, null);
+    }
+
     @Transactional
     public ImmunizationDTO createImmunization(
             NewImmunizationRequestDTO newImmunizationRequestDTO,
@@ -61,32 +73,15 @@ public class ImmunizationService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
         }
 
-        if (newImmunizationRequestDTO.getImmunizationDate().isEmpty()) {
-            log.debug("Validation Error: immunizationDate is empty");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must specify an immunization date");
-        }
-
-        String immunizationDateString = newImmunizationRequestDTO.getImmunizationDate();
-        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT_STRING, Locale.ENGLISH);
-        Date immunizationDate;
-
-        try {
-            immunizationDate = formatter.parse(immunizationDateString);
-        } catch (ParseException e) {
-            log.error("Unable to parse immunization date {}", immunizationDateString);
-            log.error(e.getMessage(), e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
-        }
-
-        if (newImmunizationRequestDTO.getImmunizationName().isEmpty()) {
-            log.debug("Validation Error: immunizationName is empty");
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must specify a immunization name");
-        }
-
         UUID currentUserUuid = jwtUserDetails.getUserUuid();
         UUID patientUuid = UUID.fromString(newImmunizationRequestDTO.getPatientUuid());
 
         Patient patient = authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+
+        Date immunizationDate = validateImmunizationInputs(
+                newImmunizationRequestDTO.getImmunizationDate(),
+                newImmunizationRequestDTO.getImmunizationName()
+        );
 
         Immunization newImmunization = Immunization.builder()
                 .immunizationUuid(UUID.randomUUID())
@@ -101,5 +96,26 @@ public class ImmunizationService {
         Immunization savedImmunization = immunizationRepository.save(newImmunization);
 
         return ConvertDTOUtil.convertImmunizationToImmunizationDTO(savedImmunization);
+    }
+
+    @Transactional
+    public ImmunizationDTO deleteImmunization(String immunizationUuidString, JwtUserDetails jwtUserDetails) {
+        UUID currentUserUuid = jwtUserDetails.getUserUuid();
+        UUID immunizationUuid = UUID.fromString(immunizationUuidString);
+
+        Optional<Immunization> optImmunization = immunizationRepository.findByImmunizationUuid(immunizationUuid);
+
+        if (optImmunization.isEmpty()) {
+            log.error("Unable to delete immunization as immunizationUuid {} not found", immunizationUuidString);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+        }
+
+        Immunization immunization = optImmunization.get();
+        UUID patientUuid = immunization.getPatient().getPatientUuid();
+
+        authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+        immunizationRepository.delete(immunization);
+
+        return ConvertDTOUtil.convertImmunizationToImmunizationDTO(immunization);
     }
 }

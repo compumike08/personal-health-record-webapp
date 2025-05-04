@@ -12,12 +12,13 @@ const MedicationsPage = () => {
 
   const [selectedCurrentMedUuid, setSelectedCurrentMedUuid] = useState(null);
 
-  const getMedicationsList = (state) => state.medicationsData.medicationsList;
+  const selectMedicationsList = (state) =>
+    state.medicationsData.medicationsList;
   const selectCurrentMedicationUuid = (_state, currentMedicationUuid) =>
     currentMedicationUuid;
 
   const selectCurrentMedication = createSelector(
-    [getMedicationsList, selectCurrentMedicationUuid],
+    [selectMedicationsList, selectCurrentMedicationUuid],
     (medicationsList, currentMedicationUuid) => {
       if (selectedCurrentMedUuid === null) {
         return null;

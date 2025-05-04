@@ -118,4 +118,40 @@ public class ImmunizationService {
 
         return ConvertDTOUtil.convertImmunizationToImmunizationDTO(immunization);
     }
+
+    @Transactional
+    public ImmunizationDTO updateImmunization(ImmunizationDTO immunizationDTO, JwtUserDetails jwtUserDetails) {
+        UUID currentUserUuid = jwtUserDetails.getUserUuid();
+        UUID immunizationUuid = UUID.fromString(immunizationDTO.getImmunizationUuid());
+
+        Optional<Immunization> optImmunization = immunizationRepository.findByImmunizationUuid(immunizationUuid);
+
+        if (optImmunization.isEmpty()) {
+            log.error(
+                    "Unable to update immunization as immunizationUuid {} not found",
+                    immunizationDTO.getImmunizationUuid()
+            );
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+        }
+
+        Immunization immunization = optImmunization.get();
+        UUID patientUuid = immunization.getPatient().getPatientUuid();
+
+        authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+
+        Date immunizationDate = validateImmunizationInputs(
+                immunizationDTO.getImmunizationDate(),
+                immunizationDTO.getImmunizationName()
+        );
+
+        immunization.setImmunizationDate(immunizationDate);
+        immunization.setImmunizationName(immunizationDTO.getImmunizationName());
+        immunization.setProviderName(immunizationDTO.getProviderName());
+        immunization.setProviderLocation(immunizationDTO.getProviderLocation());
+        immunization.setDescription(immunizationDTO.getDescription());
+
+        Immunization updatedImmunization = immunizationRepository.save(immunization);
+
+        return ConvertDTOUtil.convertImmunizationToImmunizationDTO(updatedImmunization);
+    }
 }

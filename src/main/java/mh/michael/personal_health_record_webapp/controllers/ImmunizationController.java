@@ -42,4 +42,11 @@ public class ImmunizationController {
         return immunizationService.deleteImmunization(immunizationUuid, jwtUserDetails);
     }
 
+    @PutMapping("/immunization")
+    public ImmunizationDTO updateImmunization(
+            @RequestBody ImmunizationDTO updateImmunizationDTO,
+            @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+    ) {
+        return immunizationService.updateImmunization(updateImmunizationDTO, jwtUserDetails);
+    }
 }

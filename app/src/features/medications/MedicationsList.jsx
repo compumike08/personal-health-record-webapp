@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { createSelector } from "@reduxjs/toolkit";
 import { useSelector, useDispatch } from "react-redux";
 import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
@@ -16,8 +17,28 @@ const MedicationsList = ({ onDeleteMedication, onUpdateMedication }) => {
     (state) => state.patientsData.currentPatient
   );
 
-  const medicationsList = useSelector(
-    (state) => state.medicationsData.medicationsList
+  const selectMedicationsList = (state) =>
+    state.medicationsData.medicationsList;
+
+  const selectSortedMedicationsList = createSelector(
+    [selectMedicationsList],
+    (medicationsList) => {
+      const clonedMedicationsList = medicationsList.map((imz) => {
+        return {
+          ...imz
+        };
+      });
+
+      clonedMedicationsList.sort((a, b) => {
+        return b.isCurrentlyTaking - a.isCurrentlyTaking;
+      });
+
+      return clonedMedicationsList;
+    }
+  );
+
+  const medicationsList = useSelector((state) =>
+    selectSortedMedicationsList(state)
   );
 
   const onConfirmDeleteMedication = (medicationUuid, medicationName) => {
@@ -66,7 +87,12 @@ const MedicationsList = ({ onDeleteMedication, onUpdateMedication }) => {
       <Container>
         <Row>
           <Col>
-            <h6>Medications List</h6>
+            <h6>
+              Medications List{" "}
+              <span className="fst-italic">
+                (meds currently being taken sorted first)
+              </span>
+            </h6>
           </Col>
         </Row>
         <Row>

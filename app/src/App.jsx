@@ -9,6 +9,7 @@ import LogoutPage from "./features/auth/LogoutPage";
 import UserProfile from "./features/users/UserProfile";
 import NewPatient from "./features/patients/NewPatient";
 import MedicationsPage from "./features/medications/MedicationsPage";
+import ImmunizationsPage from "./features/immunizations/ImmunizationsPage";
 
 import "./App.css";
 
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="/logout" element={<LogoutPage />} />
           <Route path="/userProfile" element={<UserProfile />} />
           <Route path="/newPatient" element={<NewPatient />} />
+          <Route path="/immunizations" element={<ImmunizationsPage />} />
           <Route path="/medications" element={<MedicationsPage />} />
         </Routes>
       </div>

@@ -44,7 +44,11 @@ export const immunizationsSlice = createSlice({
       })
       .addCase(getImmunizationsForPatientAction.fulfilled, (state, action) => {
         state.getImmunizationsForPatientStatus = IDLE_STATUS;
-        state.immunizationsList = Object.assign([], action.payload);
+        state.immunizationsList = action.payload.map((imz) => {
+          return {
+            ...imz
+          };
+        });
       })
       .addCase(getImmunizationsForPatientAction.rejected, (state) => {
         state.getImmunizationsForPatientStatus = ERROR_STATUS;

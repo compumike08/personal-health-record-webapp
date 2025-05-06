@@ -62,7 +62,11 @@ export const medicationsSlice = createSlice({
       })
       .addCase(getMedicationsForPatientAction.fulfilled, (state, action) => {
         state.getMedicationsForPatientStatus = IDLE_STATUS;
-        state.medicationsList = Object.assign([], action.payload);
+        state.medicationsList = action.payload.map((med) => {
+          return {
+            ...med
+          };
+        });
       })
       .addCase(getMedicationsForPatientAction.rejected, (state) => {
         state.getMedicationsForPatientStatus = ERROR_STATUS;

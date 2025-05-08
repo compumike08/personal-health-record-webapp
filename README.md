@@ -1,5 +1,11 @@
 # personal-health-record-webapp
 
+## DANGER!
+This application is **not** intended for use with real medical data.
+It is not HIPPA compliant, and has not been evaluated for security
+vulnerabilities. **DO NOT USE IT WITH REAL DATA!** If you choose to use it with
+real data despite this warning, we are not responsible for the results.
+
 ## Running App
 You must set the following environment variables prior to running:
 - PHR_APP_JWT_SECRET (this value should be base64 encoded)

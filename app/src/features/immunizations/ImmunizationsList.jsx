@@ -1,7 +1,8 @@
 import { useEffect } from "react";
+import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, Row, Col, Accordion } from "react-bootstrap";
+import { Container, Row, Col, Accordion, Button } from "react-bootstrap";
 import { isNil } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -10,7 +11,7 @@ import { getImmunizationsForPatientAction } from "./immunizationsSlice";
 
 dayjs.extend(customParseFormat);
 
-const ImmunizationsList = () => {
+const ImmunizationsList = ({ onUpdateImmunization }) => {
   const dispatch = useDispatch();
 
   const currentPatient = useSelector(
@@ -110,6 +111,18 @@ const ImmunizationsList = () => {
                             </p>
                           </Col>
                         </Row>
+                        <Row>
+                          <Col>
+                            <Button
+                              variant="primary"
+                              onClick={() =>
+                                onUpdateImmunization(imz.immunizationUuid)
+                              }
+                            >
+                              Edit
+                            </Button>
+                          </Col>
+                        </Row>
                       </Container>
                     </Accordion.Body>
                   </Accordion.Item>
@@ -121,6 +134,10 @@ const ImmunizationsList = () => {
       </Container>
     </>
   );
+};
+
+ImmunizationsList.propTypes = {
+  onUpdateImmunization: PropTypes.func.isRequired
 };
 
 export default ImmunizationsList;

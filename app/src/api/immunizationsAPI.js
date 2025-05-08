@@ -23,3 +23,15 @@ export async function createNewImmunizationForPatient(data) {
     throw new Error(err.response.data.message);
   }
 }
+
+export async function updateImmunization(data) {
+  const url = `/api/immunizations/immunization`;
+
+  try {
+    const response = await axios.put(url, data);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.response.data.message);
+  }
+}

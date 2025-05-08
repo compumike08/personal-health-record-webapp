@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -6,11 +7,20 @@ import { isNil } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
-import { createNewImmunizationForPatientAction } from "./immunizationsSlice";
+import {
+  createNewImmunizationForPatientAction,
+  updateImmunizationAction
+} from "./immunizationsSlice";
 
 dayjs.extend(customParseFormat);
 
-const NewUpdateImmunization = () => {
+const NewUpdateImmunization = ({
+  submitComplete = () => {
+    /* noop */
+  },
+  isUpdate = false,
+  currentImmunization = null
+}) => {
   const dispatch = useDispatch();
 
   const [backendErrorMsg, setBackendErrorMsg] = useState(null);
@@ -41,6 +51,33 @@ const NewUpdateImmunization = () => {
     setDescription("");
   };
 
+  useEffect(() => {
+    if (isUpdate && !isNil(currentImmunization)) {
+      setImmunizationName(currentImmunization.immunizationName);
+      setImmunizationDateString(currentImmunization.immunizationDate);
+      setProviderName(currentImmunization.providerName);
+      setProviderLocation(currentImmunization.providerLocation);
+      setDescription(currentImmunization.description);
+      reinitializeValidationErrors();
+    } else if (isUpdate && isNil(currentImmunization)) {
+      reinitializeInputs();
+      reinitializeValidationErrors();
+
+      if (isUpdate) {
+        submitComplete();
+      }
+    }
+  }, [isUpdate, currentImmunization, submitComplete]);
+
+  const handleCancel = () => {
+    reinitializeInputs();
+    reinitializeValidationErrors();
+
+    if (isUpdate) {
+      submitComplete();
+    }
+  };
+
   const handleSubmit = async () => {
     let isError = false;
 
@@ -61,22 +98,36 @@ const NewUpdateImmunization = () => {
     }
 
     if (!isError) {
-      const data = {
-        patientUuid: currentPatient.patientUuid,
-        immunizationName: immunizationName,
-        immunizationDate: immunizationDateString,
-        providerName: providerName,
-        providerLocation: providerLocation,
-        description: description
-      };
+      const data = isUpdate
+        ? {
+            immunizationUuid: currentImmunization.immunizationUuid,
+            immunizationName: immunizationName,
+            immunizationDate: immunizationDateString,
+            providerName: providerName,
+            providerLocation: providerLocation,
+            description: description
+          }
+        : {
+            patientUuid: currentPatient.patientUuid,
+            immunizationName: immunizationName,
+            immunizationDate: immunizationDateString,
+            providerName: providerName,
+            providerLocation: providerLocation,
+            description: description
+          };
 
       try {
-        await dispatch(createNewImmunizationForPatientAction(data)).unwrap();
+        if (isUpdate) {
+          await dispatch(updateImmunizationAction(data)).unwrap();
+        } else {
+          await dispatch(createNewImmunizationForPatientAction(data)).unwrap();
+        }
 
         reinitializeValidationErrors();
         reinitializeInputs();
 
         toast.success("Immunization saved successfully");
+        submitComplete();
       } catch (err) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
@@ -162,8 +213,17 @@ const NewUpdateImmunization = () => {
             </Form.Group>
             <Row>
               <Col>
+                {isUpdate && (
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    className="mt-3"
+                  >
+                    Cancel
+                  </Button>
+                )}
                 <Button
-                  className="mt-3"
+                  className={isUpdate ? "mt-3 ms-2" : "mt-3"}
                   variant="primary"
                   onClick={handleSubmit}
                 >
@@ -176,6 +236,20 @@ const NewUpdateImmunization = () => {
       </Row>
     </Container>
   );
+};
+
+NewUpdateImmunization.propTypes = {
+  currentImmunization:
+    PropTypes.objectOf({
+      immunizationUuid: PropTypes.string.isRequired,
+      immunizationName: PropTypes.string.isRequired,
+      immunizationDate: PropTypes.string.isRequired,
+      providerName: PropTypes.string,
+      providerLocation: PropTypes.number,
+      description: PropTypes.string
+    }) || null,
+  submitComplete: PropTypes.func,
+  isUpdate: PropTypes.bool
 };
 
 export default NewUpdateImmunization;

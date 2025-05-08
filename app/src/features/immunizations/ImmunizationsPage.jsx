@@ -1,8 +1,45 @@
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
 import ImmunizationsList from "./ImmunizationsList";
 import NewUpdateImmunization from "./NewUpdateImmunization";
 
 const ImmunizationsPage = () => {
+  const [selectedCurrentImzUuid, setSelectedCurrentImzUuid] = useState(null);
+
+  const selectImmunizationsList = (state) =>
+    state.immunizationsData.immunizationsList;
+
+  const selectCurrentImmunizationUuid = (_state, currentImmunizationUuid) =>
+    currentImmunizationUuid;
+
+  const selectCurrentImmunization = createSelector(
+    [selectImmunizationsList, selectCurrentImmunizationUuid],
+    (immunizationsList, currentImmunizationUuid) => {
+      if (selectedCurrentImzUuid === null) {
+        return null;
+      }
+
+      const index = immunizationsList.findIndex(
+        (imz) => imz.immunizationUuid === currentImmunizationUuid
+      );
+      return immunizationsList[index];
+    }
+  );
+
+  const currentImmunization = useSelector((state) =>
+    selectCurrentImmunization(state, selectedCurrentImzUuid)
+  );
+
+  const onUpdateImmunization = (immunizationUuid) => {
+    setSelectedCurrentImzUuid(immunizationUuid);
+  };
+
+  const submitComplete = () => {
+    setSelectedCurrentImzUuid(null);
+  };
+
   return (
     <Container>
       <Row>
@@ -17,10 +54,16 @@ const ImmunizationsPage = () => {
               <h6>New Immunization</h6>
             </Col>
           </Row>
-          <NewUpdateImmunization />
+          <NewUpdateImmunization
+            currentImmunization={currentImmunization}
+            isUpdate={currentImmunization !== null}
+            submitComplete={
+              currentImmunization !== null ? submitComplete : undefined
+            }
+          />
         </Col>
         <Col md="6">
-          <ImmunizationsList />
+          <ImmunizationsList onUpdateImmunization={onUpdateImmunization} />
         </Col>
       </Row>
     </Container>

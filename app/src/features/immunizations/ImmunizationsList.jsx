@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
 import { useSelector, useDispatch } from "react-redux";
-import { Container, Row, Col, Accordion, Button } from "react-bootstrap";
+import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -11,8 +11,12 @@ import { getImmunizationsForPatientAction } from "./immunizationsSlice";
 
 dayjs.extend(customParseFormat);
 
-const ImmunizationsList = ({ onUpdateImmunization }) => {
+const ImmunizationsList = ({ onDeleteImmunization, onUpdateImmunization }) => {
   const dispatch = useDispatch();
+
+  const [deleteImzUuid, setDeleteImzUuid] = useState(null);
+  const [deleteImzName, setDeleteImzName] = useState(null);
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
   const currentPatient = useSelector(
     (state) => state.patientsData.currentPatient
@@ -58,8 +62,39 @@ const ImmunizationsList = ({ onUpdateImmunization }) => {
     }
   }, [dispatch, currentPatient]);
 
+  const onConfirmDeleteImmunization = (immunizationUuid, immunizationName) => {
+    setDeleteImzUuid(immunizationUuid);
+    setDeleteImzName(immunizationName);
+    setIsShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    onDeleteImmunization(deleteImzUuid);
+    hideConfirmDelete();
+  };
+
+  const hideConfirmDelete = () => {
+    setIsShowDeleteModal(false);
+    setDeleteImzUuid(null);
+    setDeleteImzName(null);
+  };
+
   return (
     <>
+      <Modal show={isShowDeleteModal} onHide={hideConfirmDelete}>
+        <Modal.Header>Delete Immunization</Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete {deleteImzName}?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={hideConfirmDelete}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleConfirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Container>
         <Row>
           <Col>
@@ -121,6 +156,18 @@ const ImmunizationsList = ({ onUpdateImmunization }) => {
                             >
                               Edit
                             </Button>
+                            <Button
+                              variant="danger"
+                              className="ms-2"
+                              onClick={() => {
+                                onConfirmDeleteImmunization(
+                                  imz.immunizationUuid,
+                                  `${imz.immunizationName} - ${imz.immunizationDate}`
+                                );
+                              }}
+                            >
+                              Delete
+                            </Button>
                           </Col>
                         </Row>
                       </Container>
@@ -137,6 +184,7 @@ const ImmunizationsList = ({ onUpdateImmunization }) => {
 };
 
 ImmunizationsList.propTypes = {
+  onDeleteImmunization: PropTypes.func.isRequired,
   onUpdateImmunization: PropTypes.func.isRequired
 };
 

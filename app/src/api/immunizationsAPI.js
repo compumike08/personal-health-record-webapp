@@ -35,3 +35,15 @@ export async function updateImmunization(data) {
     throw new Error(err.response.data.message);
   }
 }
+
+export async function deleteImmunization(immunizationUuid) {
+  const url = `/api/immunizations/immunization/${immunizationUuid}`;
+
+  try {
+    const response = await axios.delete(url);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    throw new Error(err.response.data.message);
+  }
+}

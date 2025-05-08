@@ -7,14 +7,16 @@ import {
 import {
   getImmunizationsForPatient,
   createNewImmunizationForPatient,
-  updateImmunization
+  updateImmunization,
+  deleteImmunization
 } from "../../api/immunizationsAPI";
 
 const initialState = {
   immunizationsList: [],
   getImmunizationsForPatientStatus: IDLE_STATUS,
   createNewImmunizationForPatientStatus: IDLE_STATUS,
-  updateImmunizationStatus: IDLE_STATUS
+  updateImmunizationStatus: IDLE_STATUS,
+  deleteImmunizationStatus: IDLE_STATUS
 };
 
 export const getImmunizationsForPatientAction = createAsyncThunk(
@@ -35,6 +37,13 @@ export const updateImmunizationAction = createAsyncThunk(
   "immunizations/updateImmunizationAction",
   async (data) => {
     return await updateImmunization(data);
+  }
+);
+
+export const deleteImmunizationAction = createAsyncThunk(
+  "immunizations/deleteImmunizationAction",
+  async (immunizationUuid) => {
+    return await deleteImmunization(immunizationUuid);
   }
 );
 
@@ -87,6 +96,19 @@ export const immunizationsSlice = createSlice({
       })
       .addCase(updateImmunizationAction.rejected, (state) => {
         state.updateImmunizationStatus = ERROR_STATUS;
+      })
+      .addCase(deleteImmunizationAction.pending, (state) => {
+        state.deleteImmunizationStatus = LOADING_STATUS;
+      })
+      .addCase(deleteImmunizationAction.fulfilled, (state, action) => {
+        state.deleteImmunizationStatus = IDLE_STATUS;
+        const index = state.immunizationsList.findIndex(
+          (imz) => imz.immunizationUuid === action.payload.immunizationUuid
+        );
+        state.immunizationsList.splice(index, 1);
+      })
+      .addCase(deleteImmunizationAction.rejected, (state) => {
+        state.deleteImmunizationStatus = ERROR_STATUS;
       });
   }
 });

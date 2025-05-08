@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
+import { toast } from "react-toastify";
 import ImmunizationsList from "./ImmunizationsList";
 import NewUpdateImmunization from "./NewUpdateImmunization";
+import { deleteImmunizationAction } from "./immunizationsSlice";
 
 const ImmunizationsPage = () => {
+  const dispatch = useDispatch();
+
   const [selectedCurrentImzUuid, setSelectedCurrentImzUuid] = useState(null);
 
   const selectImmunizationsList = (state) =>
@@ -40,6 +44,16 @@ const ImmunizationsPage = () => {
     setSelectedCurrentImzUuid(null);
   };
 
+  const onDeleteImmunization = async (immunizationUuid) => {
+    try {
+      await dispatch(deleteImmunizationAction(immunizationUuid)).unwrap();
+
+      toast.success("Immunization deleted successfully");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <Container>
       <Row>
@@ -63,7 +77,10 @@ const ImmunizationsPage = () => {
           />
         </Col>
         <Col md="6">
-          <ImmunizationsList onUpdateImmunization={onUpdateImmunization} />
+          <ImmunizationsList
+            onUpdateImmunization={onUpdateImmunization}
+            onDeleteImmunization={onDeleteImmunization}
+          />
         </Col>
       </Row>
     </Container>

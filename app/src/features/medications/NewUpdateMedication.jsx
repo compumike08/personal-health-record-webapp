@@ -332,8 +332,7 @@ NewUpdateMedication.propTypes = {
       notes: PropTypes.string
     }) || null,
   submitComplete: PropTypes.func,
-  isUpdate: PropTypes.bool,
-  mediciationUuid: PropTypes.string
+  isUpdate: PropTypes.bool
 };
 
 export default NewUpdateMedication;

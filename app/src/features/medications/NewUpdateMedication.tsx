@@ -15,7 +15,7 @@ import { Medication } from "./medications";
 dayjs.extend(customParseFormat);
 
 interface NewUpdateMedicationProps {
-  submitComplete: Function | undefined;
+  submitComplete: (() => void) | undefined;
   isUpdate: boolean;
   currentMedication: Medication | null;
 }

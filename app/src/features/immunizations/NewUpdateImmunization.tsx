@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 dayjs.extend(customParseFormat);
 
 interface NewUpdateImmunizationProps {
-  submitComplete: Function | undefined;
+  submitComplete: (() => void) | undefined;
   isUpdate: boolean;
   currentImmunization: Immunization | null;
 }
@@ -30,7 +30,7 @@ const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [backendErrorMsg, setBackendErrorMsg] = useState(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
   const [immunizationName, setImmunizationName] = useState("");
   const [isImmunizationNameError, setIsImmunizationNameError] = useState(false);
   const [immunizationDateString, setImmunizationDateString] = useState("");

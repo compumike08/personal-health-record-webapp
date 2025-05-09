@@ -1,6 +1,9 @@
 import axios from "axios";
 import IdTokenVerifier from "idtoken-verifier";
-import { TOKEN_SESSION_ATTRIBUTE_NAME } from "../constants/general";
+import {
+  GENERIC_ERR_MSG,
+  TOKEN_SESSION_ATTRIBUTE_NAME
+} from "../constants/general";
 import { NewUser, User } from "../features/users/users";
 import { AuthRequest, AuthResponse } from "../features/auth/auth";
 
@@ -67,9 +70,14 @@ export async function registerUser(data: NewUser): Promise<User> {
       password: data.password
     });
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
-    throw new Error(err.response.data.message);
+
+    if (axios.isAxiosError(err) && err.response) {
+      throw new Error(err.response.data.message);
+    }
+
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -82,9 +90,14 @@ export async function authenticate(data: AuthRequest): Promise<AuthResponse> {
     });
     registerSuccessfulLoginForJwt(response.data.token);
     return response.data.token;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
-    throw new Error(err.response.data.message);
+
+    if (axios.isAxiosError(err) && err.response) {
+      throw new Error(err.response.data.message);
+    }
+
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -94,9 +107,14 @@ export async function refreshToken(): Promise<AuthResponse> {
     const response = await axios.post(url);
     registerSuccessfulLoginForJwt(response.data.token);
     return response.data.token;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
-    throw new Error(err.response.data.message);
+
+    if (axios.isAxiosError(err) && err.response) {
+      throw new Error(err.response.data.message);
+    }
+
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 

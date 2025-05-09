@@ -7,3 +7,5 @@ export enum RequestStates {
 }
 
 export const DATE_FORMAT = "MM/DD/YYYY";
+
+export const GENERIC_ERR_MSG = "An unknown javascript error has occurred";

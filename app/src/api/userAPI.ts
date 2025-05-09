@@ -1,5 +1,6 @@
 import axios from "axios";
 import { EditUser, User } from "../features/users/users";
+import { GENERIC_ERR_MSG } from "../constants/general";
 
 export async function getCurrentUser(): Promise<User> {
   const url = `/api/users/currentUser`;
@@ -7,14 +8,14 @@ export async function getCurrentUser(): Promise<User> {
   try {
     const response = await axios.get(url);
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -27,13 +28,13 @@ export async function editCurrentUser(data: EditUser): Promise<User> {
       email: data.email
     });
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }

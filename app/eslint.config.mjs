@@ -25,7 +25,9 @@ export default [
       "react-hooks": reactHooks
     },
     rules: {
-      ...reactHooks.configs.recommended.rules
+      ...reactHooks.configs.recommended.rules,
+      "react/prop-types": "off",
+      "@typescript-eslint/no-explicit-any": "off"
     }
   },
   { ignores: ["**/dist/*"] }

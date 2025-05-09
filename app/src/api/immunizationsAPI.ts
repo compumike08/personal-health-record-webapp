@@ -3,6 +3,7 @@ import {
   Immunization,
   NewImmunization
 } from "../features/immunizations/immunizations";
+import { GENERIC_ERR_MSG } from "../constants/general";
 
 export async function getImmunizationsForPatient(
   patientUuid: string
@@ -12,14 +13,14 @@ export async function getImmunizationsForPatient(
   try {
     const response = await axios.get(url);
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -31,14 +32,14 @@ export async function createNewImmunizationForPatient(
   try {
     const response = await axios.post(url, data);
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -50,14 +51,14 @@ export async function updateImmunization(
   try {
     const response = await axios.put(url, data);
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }
 
@@ -69,13 +70,13 @@ export async function deleteImmunization(
   try {
     const response = await axios.delete(url);
     return response.data;
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
       throw new Error(err.response.data.message);
     }
 
-    throw new Error(err);
+    throw new Error(GENERIC_ERR_MSG);
   }
 }

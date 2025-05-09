@@ -19,7 +19,7 @@ const UserProfile = () => {
   const [email, setEmail] = useState("");
   const [isUsernameError, setIsUsernameError] = useState(false);
   const [isEmailError, setIsEmailError] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function getCurrentUser() {

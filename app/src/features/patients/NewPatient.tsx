@@ -9,7 +9,7 @@ const NewPatient = () => {
 
   const [patientName, setPatientName] = useState("");
   const [isPatientNameError, setIsPatientNameError] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
 
   const handlePatientNameChange = (
     evt: React.ChangeEvent<HTMLInputElement>

@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [pluginReact(), pluginTypeCheck()],
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080'
-      },
+      "/api": {
+        target: "http://localhost:8080"
+      }
     }
   }
 });

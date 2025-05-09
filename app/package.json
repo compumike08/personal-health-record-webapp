@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
-    "format": "prettier --write \"**/*.+(js|jsx|json|css|md|ts|tsx)\"",
+    "format": "prettier --write \"**/*.+(js|jsx|json|css|md|ts|tsx|mjs)\"",
     "lint": "eslint .",
     "preview": "rsbuild preview",
     "postinstall": "cd .. && husky app/.husky"
@@ -51,7 +51,7 @@
     "typescript-eslint": "^8.32.0"
   },
   "lint-staged": {
-    "*.{js,jsx,json,css,md,ts,tsx}": [
+    "*.{js,jsx,json,css,md,ts,tsx,mjs}": [
       "prettier --write",
       "eslint"
     ]

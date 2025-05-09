@@ -29,6 +29,7 @@ public class JwtTokenUtil implements Serializable {
   @Value("${jwt.token.expiration.in.seconds}")
   private Long expiration;
 
+  private static final String ISSUER = "phr-webapp";
   private static final String AUTH_AUD = "phr-webapp--auth";
   private static final String FORGOT_PASSWORD_AUD = "phr-webapp--forgot-password";
 
@@ -73,6 +74,7 @@ public class JwtTokenUtil implements Serializable {
   public String generateTokenForAuthentication(JwtUserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("aud", AUTH_AUD);
+    claims.put("iss", ISSUER);
     return doGenerateToken(claims, userDetails.getUserUuid().toString());
   }
 
@@ -80,6 +82,7 @@ public class JwtTokenUtil implements Serializable {
     String emailAddress = user.getEmail();
     Map<String, Object> claims = new HashMap<>();
     claims.put("aud", FORGOT_PASSWORD_AUD);
+    claims.put("iss", ISSUER);
     return doGenerateToken(claims, emailAddress);
   }
 
@@ -130,6 +133,7 @@ public class JwtTokenUtil implements Serializable {
     try {
       Jwts.parserBuilder()
         .setSigningKey(key)
+        .requireIssuer(ISSUER)
         .requireSubject(userDetails.getUserUuid().toString())
         .requireAudience(AUTH_AUD)
         .build()
@@ -155,6 +159,7 @@ public class JwtTokenUtil implements Serializable {
     try {
       Jwts.parserBuilder()
         .setSigningKey(key)
+        .requireIssuer(ISSUER)
         .requireSubject(user.getEmail())
         .requireAudience(FORGOT_PASSWORD_AUD)
         .build()

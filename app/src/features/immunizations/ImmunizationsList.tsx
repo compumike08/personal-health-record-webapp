@@ -1,28 +1,45 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
-import { useSelector, useDispatch } from "react-redux";
 import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
 import { getImmunizationsForPatientAction } from "./immunizationsSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RootState } from "../../store";
 
 dayjs.extend(customParseFormat);
 
-const ImmunizationsList = ({ onDeleteImmunization, onUpdateImmunization }) => {
-  const dispatch = useDispatch();
+interface OnDeleteImmunizationFunction {
+  (immunizationUuid: string): Promise<void>;
+}
 
-  const [deleteImzUuid, setDeleteImzUuid] = useState(null);
-  const [deleteImzName, setDeleteImzName] = useState(null);
+interface OnUpdateImmunizationFunction {
+  (immunizationUuid: string): void;
+}
+
+interface ImmunizationsListProps {
+  onDeleteImmunization: OnDeleteImmunizationFunction;
+  onUpdateImmunization: OnUpdateImmunizationFunction;
+}
+
+const ImmunizationsList: React.FC<ImmunizationsListProps> = ({
+  onDeleteImmunization,
+  onUpdateImmunization
+}) => {
+  const dispatch = useAppDispatch();
+
+  const [deleteImzUuid, setDeleteImzUuid] = useState<string | null>(null);
+  const [deleteImzName, setDeleteImzName] = useState<string | null>(null);
   const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
-  const currentPatient = useSelector(
+  const currentPatient = useAppSelector(
     (state) => state.patientsData.currentPatient
   );
 
-  const selectImmunizationsList = (state) =>
+  const selectImmunizationsList = (state: RootState) =>
     state.immunizationsData.immunizationsList;
 
   const selectSortedImmunizationsList = createSelector(
@@ -48,7 +65,7 @@ const ImmunizationsList = ({ onDeleteImmunization, onUpdateImmunization }) => {
     }
   );
 
-  const immunizationsList = useSelector((state) =>
+  const immunizationsList = useAppSelector((state) =>
     selectSortedImmunizationsList(state)
   );
 
@@ -62,15 +79,24 @@ const ImmunizationsList = ({ onDeleteImmunization, onUpdateImmunization }) => {
     }
   }, [dispatch, currentPatient]);
 
-  const onConfirmDeleteImmunization = (immunizationUuid, immunizationName) => {
+  const onConfirmDeleteImmunization = (
+    immunizationUuid: string,
+    immunizationName: string
+  ) => {
     setDeleteImzUuid(immunizationUuid);
     setDeleteImzName(immunizationName);
     setIsShowDeleteModal(true);
   };
 
   const handleConfirmDelete = () => {
-    onDeleteImmunization(deleteImzUuid);
-    hideConfirmDelete();
+    if (deleteImzUuid) {
+      onDeleteImmunization(deleteImzUuid);
+      hideConfirmDelete();
+    } else {
+      throw new Error(
+        "deleteImzUuid was null when handleConfirmDelete was called"
+      );
+    }
   };
 
   const hideConfirmDelete = () => {

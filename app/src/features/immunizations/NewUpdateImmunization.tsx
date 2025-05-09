@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { isNil } from "lodash";
@@ -12,16 +10,25 @@ import {
   updateImmunizationAction
 } from "./immunizationsSlice";
 
+import { Immunization, NewImmunization } from "./immunizations";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+
 dayjs.extend(customParseFormat);
 
-const NewUpdateImmunization = ({
+interface NewUpdateImmunizationProps {
+  submitComplete: Function | undefined;
+  isUpdate: boolean;
+  currentImmunization: Immunization | null;
+}
+
+const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
   submitComplete = () => {
     /* noop */
   },
   isUpdate = false,
-  currentImmunization = null
+  currentImmunization
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [backendErrorMsg, setBackendErrorMsg] = useState(null);
   const [immunizationName, setImmunizationName] = useState("");
@@ -29,11 +36,11 @@ const NewUpdateImmunization = ({
   const [immunizationDateString, setImmunizationDateString] = useState("");
   const [isImmunizationDateStringError, setIsImmunizationDateStringError] =
     useState(false);
-  const [providerName, setProviderName] = useState("");
-  const [providerLocation, setProviderLocation] = useState("");
-  const [description, setDescription] = useState("");
+  const [providerName, setProviderName] = useState<string>("");
+  const [providerLocation, setProviderLocation] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
-  const currentPatient = useSelector(
+  const currentPatient = useAppSelector(
     (state) => state.patientsData.currentPatient
   );
 
@@ -98,16 +105,19 @@ const NewUpdateImmunization = ({
     }
 
     if (!isError) {
-      const data = isUpdate
-        ? {
+      try {
+        if (isUpdate && currentImmunization) {
+          const data: Immunization = {
             immunizationUuid: currentImmunization.immunizationUuid,
             immunizationName: immunizationName,
             immunizationDate: immunizationDateString,
             providerName: providerName,
             providerLocation: providerLocation,
             description: description
-          }
-        : {
+          };
+          await dispatch(updateImmunizationAction(data)).unwrap();
+        } else if (!isUpdate && currentPatient) {
+          const data: NewImmunization = {
             patientUuid: currentPatient.patientUuid,
             immunizationName: immunizationName,
             immunizationDate: immunizationDateString,
@@ -115,12 +125,11 @@ const NewUpdateImmunization = ({
             providerLocation: providerLocation,
             description: description
           };
-
-      try {
-        if (isUpdate) {
-          await dispatch(updateImmunizationAction(data)).unwrap();
-        } else {
           await dispatch(createNewImmunizationForPatientAction(data)).unwrap();
+        } else {
+          throw new Error(
+            "Invalid combination of states when attempting to dispatch create or update immunization action"
+          );
         }
 
         reinitializeValidationErrors();
@@ -128,14 +137,14 @@ const NewUpdateImmunization = ({
 
         toast.success("Immunization saved successfully");
         submitComplete();
-      } catch (err) {
+      } catch (err: any) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
       }
     }
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };
@@ -236,20 +245,6 @@ const NewUpdateImmunization = ({
       </Row>
     </Container>
   );
-};
-
-NewUpdateImmunization.propTypes = {
-  currentImmunization:
-    PropTypes.objectOf({
-      immunizationUuid: PropTypes.string.isRequired,
-      immunizationName: PropTypes.string.isRequired,
-      immunizationDate: PropTypes.string.isRequired,
-      providerName: PropTypes.string,
-      providerLocation: PropTypes.number,
-      description: PropTypes.string
-    }) || null,
-  submitComplete: PropTypes.func,
-  isUpdate: PropTypes.bool
 };
 
 export default NewUpdateImmunization;

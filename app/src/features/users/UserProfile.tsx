@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import {
   getUserProfileAction,
   editUserProfileAction
 } from "./userProfileSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 const UserProfile = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const reduxUsername = useSelector((state) => state.userProfileData.username);
-  const reduxEmail = useSelector((state) => state.userProfileData.email);
+  const reduxUsername = useAppSelector(
+    (state) => state.userProfileData.username
+  );
+  const reduxEmail = useAppSelector((state) => state.userProfileData.email);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -23,7 +25,7 @@ const UserProfile = () => {
     async function getCurrentUser() {
       try {
         await dispatch(getUserProfileAction()).unwrap();
-      } catch (err) {
+      } catch (err: any) {
         setBackendErrorMsg(err.message);
       }
     }
@@ -36,11 +38,11 @@ const UserProfile = () => {
     setEmail(reduxEmail);
   }, [reduxUsername, reduxEmail]);
 
-  const handleUsernameChange = (evt) => {
+  const handleUsernameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(evt.target.value);
   };
 
-  const handleEmailChange = (evt) => {
+  const handleEmailChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(evt.target.value);
   };
 
@@ -71,14 +73,14 @@ const UserProfile = () => {
         ).unwrap();
 
         toast.success("User profile successfully updated");
-      } catch (err) {
+      } catch (err: any) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
       }
     }
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };

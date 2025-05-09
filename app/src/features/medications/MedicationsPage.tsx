@@ -1,21 +1,26 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import NewUpdateMedication from "./NewUpdateMedication";
 import MedicationsList from "./MedicationsList";
 import { deleteMedicationAction } from "./medicationsSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RootState } from "../../store";
 
 const MedicationsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const [selectedCurrentMedUuid, setSelectedCurrentMedUuid] = useState(null);
+  const [selectedCurrentMedUuid, setSelectedCurrentMedUuid] = useState<
+    string | null
+  >(null);
 
-  const selectMedicationsList = (state) =>
+  const selectMedicationsList = (state: RootState) =>
     state.medicationsData.medicationsList;
-  const selectCurrentMedicationUuid = (_state, currentMedicationUuid) =>
-    currentMedicationUuid;
+  const selectCurrentMedicationUuid = (
+    _state: RootState,
+    currentMedicationUuid: string | null
+  ) => currentMedicationUuid;
 
   const selectCurrentMedication = createSelector(
     [selectMedicationsList, selectCurrentMedicationUuid],
@@ -31,11 +36,11 @@ const MedicationsPage = () => {
     }
   );
 
-  const currentMedication = useSelector((state) =>
+  const currentMedication = useAppSelector((state) =>
     selectCurrentMedication(state, selectedCurrentMedUuid)
   );
 
-  const onUpdateMedication = (medicationUuid) => {
+  const onUpdateMedication = (medicationUuid: string) => {
     setSelectedCurrentMedUuid(medicationUuid);
   };
 
@@ -43,12 +48,12 @@ const MedicationsPage = () => {
     setSelectedCurrentMedUuid(null);
   };
 
-  const onDeleteMedication = async (medicationUuid) => {
+  const onDeleteMedication = async (medicationUuid: string) => {
     try {
       await dispatch(deleteMedicationAction(medicationUuid)).unwrap();
 
       toast.success("Medication deleted successfully");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message);
     }
   };

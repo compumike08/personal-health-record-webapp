@@ -1,23 +1,40 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
-import { useSelector, useDispatch } from "react-redux";
 import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
 import { getMedicationsForPatientAction } from "./medicationsSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RootState } from "../../store";
 
-const MedicationsList = ({ onDeleteMedication, onUpdateMedication }) => {
-  const dispatch = useDispatch();
+interface OnDeleteMedicationFunction {
+  (medicationUuid: string): Promise<void>;
+}
 
-  const [deleteMedUuid, setDeleteMedUuid] = useState(null);
-  const [deleteMedName, setDeleteMedName] = useState(null);
+interface OnUpdateMedicationFunction {
+  (medicationUuid: string): void;
+}
+
+interface MedicationsListProps {
+  onDeleteMedication: OnDeleteMedicationFunction;
+  onUpdateMedication: OnUpdateMedicationFunction;
+}
+
+const MedicationsList: React.FC<MedicationsListProps> = ({
+  onDeleteMedication,
+  onUpdateMedication
+}) => {
+  const dispatch = useAppDispatch();
+
+  const [deleteMedUuid, setDeleteMedUuid] = useState<string | null>(null);
+  const [deleteMedName, setDeleteMedName] = useState<string | null>(null);
   const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
 
-  const currentPatient = useSelector(
+  const currentPatient = useAppSelector(
     (state) => state.patientsData.currentPatient
   );
 
-  const selectMedicationsList = (state) =>
+  const selectMedicationsList = (state: RootState) =>
     state.medicationsData.medicationsList;
 
   const selectSortedMedicationsList = createSelector(
@@ -30,26 +47,35 @@ const MedicationsList = ({ onDeleteMedication, onUpdateMedication }) => {
       });
 
       clonedMedicationsList.sort((a, b) => {
-        return b.isCurrentlyTaking - a.isCurrentlyTaking;
+        return Number(b.isCurrentlyTaking) - Number(a.isCurrentlyTaking);
       });
 
       return clonedMedicationsList;
     }
   );
 
-  const medicationsList = useSelector((state) =>
+  const medicationsList = useAppSelector((state) =>
     selectSortedMedicationsList(state)
   );
 
-  const onConfirmDeleteMedication = (medicationUuid, medicationName) => {
+  const onConfirmDeleteMedication = (
+    medicationUuid: string,
+    medicationName: string
+  ) => {
     setDeleteMedUuid(medicationUuid);
     setDeleteMedName(medicationName);
     setIsShowDeleteModal(true);
   };
 
   const handleConfirmDelete = () => {
-    onDeleteMedication(deleteMedUuid);
-    hideConfirmDelete();
+    if (deleteMedUuid) {
+      onDeleteMedication(deleteMedUuid);
+      hideConfirmDelete();
+    } else {
+      throw new Error(
+        "deleteMedUuid was null when handleConfirmDelete was called"
+      );
+    }
   };
 
   const hideConfirmDelete = () => {

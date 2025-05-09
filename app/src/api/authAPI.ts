@@ -1,10 +1,12 @@
 import axios from "axios";
 import IdTokenVerifier from "idtoken-verifier";
 import { TOKEN_SESSION_ATTRIBUTE_NAME } from "../constants/general";
+import { NewUser, User } from "../features/users/users";
+import { AuthRequest, AuthResponse } from "../features/auth/auth";
 
-let axiosHeaderInterceptor = null;
+let axiosHeaderInterceptor: number | null = null;
 
-function createJWTToken(token) {
+function createJWTToken(token: string) {
   return "Bearer " + token;
 }
 
@@ -14,7 +16,7 @@ function isUserLoggedIn() {
   return true;
 }
 
-function setupAxiosInterceptors(token) {
+function setupAxiosInterceptors(token: string) {
   if (axiosHeaderInterceptor !== null) {
     axios.interceptors.request.eject(axiosHeaderInterceptor);
     axiosHeaderInterceptor = null;
@@ -28,12 +30,15 @@ function setupAxiosInterceptors(token) {
   });
 }
 
-export function registerSuccessfulLoginForJwt(token) {
+export function registerSuccessfulLoginForJwt(token: string) {
   const bearerToken = createJWTToken(token);
   sessionStorage.setItem(TOKEN_SESSION_ATTRIBUTE_NAME, bearerToken);
   setupAxiosInterceptors(bearerToken);
 
-  const verifier = new IdTokenVerifier({});
+  const verifier = new IdTokenVerifier({
+    issuer: "phr-webapp",
+    audience: "phr-webapp--auth"
+  });
 
   const decodedToken = verifier.decode(token).payload;
 
@@ -53,7 +58,7 @@ export function registerSuccessfulLoginForJwt(token) {
   setTimeout(refreshToken, timerValueForRefresh * 1000);
 }
 
-export async function registerUser(data) {
+export async function registerUser(data: NewUser): Promise<User> {
   const url = `/api/registerUser`;
   try {
     const response = await axios.post(url, {
@@ -62,13 +67,13 @@ export async function registerUser(data) {
       password: data.password
     });
     return response.data;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     throw new Error(err.response.data.message);
   }
 }
 
-export async function authenticate(data) {
+export async function authenticate(data: AuthRequest): Promise<AuthResponse> {
   const url = `/api/authenticate`;
   try {
     const response = await axios.post(url, {
@@ -77,44 +82,19 @@ export async function authenticate(data) {
     });
     registerSuccessfulLoginForJwt(response.data.token);
     return response.data.token;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     throw new Error(err.response.data.message);
   }
 }
 
-export async function refreshToken() {
+export async function refreshToken(): Promise<AuthResponse> {
   const url = `/api/refresh`;
   try {
     const response = await axios.post(url);
     registerSuccessfulLoginForJwt(response.data.token);
     return response.data.token;
-  } catch (err) {
-    console.log(err);
-    throw new Error(err.response.data.message);
-  }
-}
-
-export async function sendPasswordResetEmail(data) {
-  const url = `/api/sendForgotPasswordEmail`;
-  try {
-    await axios.post(url, {
-      email: data.email
-    });
-  } catch (err) {
-    console.log(err);
-    throw new Error(err.response.data.message);
-  }
-}
-
-export async function resetPassword(data) {
-  const url = `/api/resetPassword`;
-  try {
-    await axios.post(url, {
-      forgotPasswordToken: data.forgotPasswordToken,
-      newPassword: data.newPassword
-    });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     throw new Error(err.response.data.message);
   }
@@ -122,6 +102,8 @@ export async function resetPassword(data) {
 
 export function logout() {
   sessionStorage.clear();
-  axios.interceptors.request.eject(axiosHeaderInterceptor);
-  axiosHeaderInterceptor = null;
+  if (axiosHeaderInterceptor !== null) {
+    axios.interceptors.request.eject(axiosHeaderInterceptor);
+    axiosHeaderInterceptor = null;
+  }
 }

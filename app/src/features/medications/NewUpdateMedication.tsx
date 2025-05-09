@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { isNil, toNumber } from "lodash";
@@ -11,19 +9,27 @@ import {
   createNewMedicationForPatientAction,
   updateMedicationAction
 } from "./medicationsSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { Medication } from "./medications";
 
 dayjs.extend(customParseFormat);
 
-const NewUpdateMedication = ({
+interface NewUpdateMedicationProps {
+  submitComplete: Function | undefined;
+  isUpdate: boolean;
+  currentMedication: Medication | null;
+}
+
+const NewUpdateMedication: React.FC<NewUpdateMedicationProps> = ({
   submitComplete = () => {
     /* noop */
   },
   isUpdate = false,
   currentMedication = null
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const [backendErrorMsg, setBackendErrorMsg] = useState(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
   const [medName, setMedName] = useState("");
   const [isMedNameError, setIsMedNameError] = useState(false);
   const [isCurrentlyTakingMed, setIsCurrentlyTakingMed] = useState(false);
@@ -36,7 +42,7 @@ const NewUpdateMedication = ({
   const [medDosageUnit, setMedDosageUnit] = useState("");
   const [medNotes, setMedNotes] = useState("");
 
-  const currentPatient = useSelector(
+  const currentPatient = useAppSelector(
     (state) => state.patientsData.currentPatient
   );
 
@@ -44,15 +50,25 @@ const NewUpdateMedication = ({
     if (isUpdate && !isNil(currentMedication)) {
       setMedName(currentMedication.medicationName);
       setIsCurrentlyTakingMed(currentMedication.isCurrentlyTaking);
-      setMedStartDateString(currentMedication.medicationStartDate);
-      setMedEndDateString(currentMedication.medicationEndDate);
+      setMedStartDateString(
+        currentMedication.medicationStartDate
+          ? currentMedication.medicationStartDate
+          : ""
+      );
+      setMedEndDateString(
+        currentMedication.medicationEndDate
+          ? currentMedication.medicationEndDate
+          : ""
+      );
       setMedDosage(
         isNil(currentMedication.dosage)
           ? ""
           : currentMedication.dosage.toString()
       );
-      setMedDosageUnit(currentMedication.dosageUnit);
-      setMedNotes(currentMedication.notes);
+      setMedDosageUnit(
+        currentMedication.dosageUnit ? currentMedication.dosageUnit : ""
+      );
+      setMedNotes(currentMedication.notes ? currentMedication.notes : "");
       reinitializeValidationErrors();
     } else if (isUpdate && isNil(currentMedication)) {
       reinitializeInputs();
@@ -73,31 +89,39 @@ const NewUpdateMedication = ({
     }
   };
 
-  const handleMedNameChange = (evt) => {
+  const handleMedNameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setMedName(evt.target.value);
   };
 
-  const handleCurrentlyTakingMedChange = (evt) => {
+  const handleCurrentlyTakingMedChange = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setIsCurrentlyTakingMed(evt.target.checked);
   };
 
-  const handleMedStartDateStringChange = (evt) => {
+  const handleMedStartDateStringChange = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setMedStartDateString(evt.target.value);
   };
 
-  const handleMedEndDateStringChange = (evt) => {
+  const handleMedEndDateStringChange = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setMedEndDateString(evt.target.value);
   };
 
-  const handleMedDosageChange = (evt) => {
+  const handleMedDosageChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setMedDosage(evt.target.value);
   };
 
-  const handleMedDosageUnitChange = (evt) => {
+  const handleMedDosageUnitChange = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setMedDosageUnit(evt.target.value);
   };
 
-  const handleMedNotesChange = (evt) => {
+  const handleMedNotesChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setMedNotes(evt.target.value);
   };
 
@@ -147,33 +171,39 @@ const NewUpdateMedication = ({
     }
 
     if (!isError) {
-      const data = isUpdate
-        ? {
+      try {
+        if (isUpdate && currentMedication) {
+          const data = {
             medicationUuid: currentMedication.medicationUuid,
             medicationName: medName,
             isCurrentlyTaking: isCurrentlyTakingMed,
             medicationStartDate: medStartDateString,
             medicationEndDate: medEndDateString,
-            dosage: medDosage.length > 0 ? toNumber(medDosage) : null,
+            dosage:
+              medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
             dosageUnit: medDosageUnit,
             notes: medNotes
-          }
-        : {
+          };
+
+          await dispatch(updateMedicationAction(data)).unwrap();
+        } else if (!isUpdate && currentPatient) {
+          const data = {
             patientUuid: currentPatient.patientUuid,
             medicationName: medName,
             isCurrentlyTaking: isCurrentlyTakingMed,
             medicationStartDate: medStartDateString,
             medicationEndDate: medEndDateString,
-            dosage: medDosage.length > 0 ? toNumber(medDosage) : null,
+            dosage:
+              medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
             dosageUnit: medDosageUnit,
             notes: medNotes
           };
 
-      try {
-        if (isUpdate) {
-          await dispatch(updateMedicationAction(data)).unwrap();
-        } else {
           await dispatch(createNewMedicationForPatientAction(data)).unwrap();
+        } else {
+          throw new Error(
+            "Invalid combination of states when attempting to dispatch create or update medication action"
+          );
         }
 
         reinitializeValidationErrors();
@@ -181,14 +211,14 @@ const NewUpdateMedication = ({
 
         toast.success("Medication saved successfully");
         submitComplete();
-      } catch (err) {
+      } catch (err: any) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
       }
     }
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };
@@ -317,22 +347,6 @@ const NewUpdateMedication = ({
       </Row>
     </Container>
   );
-};
-
-NewUpdateMedication.propTypes = {
-  currentMedication:
-    PropTypes.objectOf({
-      medicationUuid: PropTypes.string.isRequired,
-      medicationName: PropTypes.string.isRequired,
-      isCurrentlyTaking: PropTypes.bool.isRequired,
-      medicationStartDate: PropTypes.string,
-      medicationEndDate: PropTypes.string,
-      dosage: PropTypes.number,
-      dosageUnit: PropTypes.string,
-      notes: PropTypes.string
-    }) || null,
-  submitComplete: PropTypes.func,
-  isUpdate: PropTypes.bool
 };
 
 export default NewUpdateMedication;

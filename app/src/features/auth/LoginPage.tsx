@@ -1,50 +1,32 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
-import { registerUserAction } from "./authSlice";
+import { loginAction } from "./authSlice";
+import { useAppDispatch } from "../../hooks";
 
-const RegisterUser = () => {
-  const dispatch = useDispatch();
+const LoginPage = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [reenteredPassword, setReenteredPassword] = useState("");
   const [isUsernameError, setIsUsernameError] = useState(false);
-  const [isEmailError, setIsEmailError] = useState(false);
   const [isPasswordError, setIsPasswordError] = useState(false);
-  const [isReenteredPasswordError, setIsReenteredPasswordError] =
-    useState(false);
-  const [isPasswordsNotMatch, setIsPasswordsNotMatch] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
 
-  const handleUsernameChange = (evt) => {
+  const handleUsernameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(evt.target.value);
   };
 
-  const handleEmailChange = (evt) => {
-    setEmail(evt.target.value);
-  };
-
-  const handlePasswordChange = (evt) => {
+  const handlePasswordChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(evt.target.value);
-  };
-
-  const handleReenteredPasswordChange = (evt) => {
-    setReenteredPassword(evt.target.value);
   };
 
   const handleSubmit = async () => {
     let isError = false;
 
     setIsUsernameError(false);
-    setIsEmailError(false);
     setIsPasswordError(false);
-    setIsReenteredPasswordError(false);
-    setIsPasswordsNotMatch(false);
     setBackendErrorMsg(null);
 
     if (username === null || username.length < 1) {
@@ -52,47 +34,28 @@ const RegisterUser = () => {
       setIsUsernameError(true);
     }
 
-    if (email === null || email.length < 1) {
-      isError = false;
-      setIsEmailError(true);
-    }
-
     if (password === null || password.length < 1) {
       isError = true;
       setIsPasswordError(true);
     }
 
-    if (reenteredPassword === null || reenteredPassword.length < 1) {
-      isError = true;
-      setIsReenteredPasswordError(true);
-    }
-
-    if (password !== reenteredPassword) {
-      isError = true;
-      setIsReenteredPasswordError(true);
-      setIsPasswordsNotMatch(true);
-    }
-
     if (isError === false) {
       try {
         await dispatch(
-          registerUserAction({
+          loginAction({
             username: username,
-            email: email,
             password: password
           })
         ).unwrap();
 
-        toast.success("New user successfully registered");
-        navigate("/login");
-      } catch (err) {
-        toast.error(err.message);
+        navigate("/home");
+      } catch (err: any) {
         setBackendErrorMsg(err.message);
       }
     }
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };
@@ -101,7 +64,7 @@ const RegisterUser = () => {
     <Container>
       <Row>
         <Col>
-          <div className="glbl-heading">Register New User</div>
+          <div className="glbl-heading">Login</div>
         </Col>
       </Row>
       {backendErrorMsg && (
@@ -127,19 +90,6 @@ const RegisterUser = () => {
                 Username is required
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group controlId="email-input">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                name="email-input"
-                type="text"
-                isInvalid={isEmailError}
-                value={email}
-                onChange={handleEmailChange}
-              />
-              <Form.Control.Feedback type="invalid">
-                Email is required
-              </Form.Control.Feedback>
-            </Form.Group>
             <Form.Group controlId="password-input">
               <Form.Label>Password</Form.Label>
               <Form.Control
@@ -151,21 +101,6 @@ const RegisterUser = () => {
               />
               <Form.Control.Feedback type="invalid">
                 Password is required
-              </Form.Control.Feedback>
-            </Form.Group>
-            <Form.Group controlId="reentered-password-input">
-              <Form.Label>Re-enter Password</Form.Label>
-              <Form.Control
-                name="reentered-password-input"
-                type="password"
-                isInvalid={isReenteredPasswordError}
-                value={reenteredPassword}
-                onChange={handleReenteredPasswordChange}
-              />
-              <Form.Control.Feedback type="invalid">
-                {isPasswordsNotMatch
-                  ? "Passwords do not match"
-                  : "Re-enter password is required"}
               </Form.Control.Feedback>
             </Form.Group>
             <Row>
@@ -186,4 +121,4 @@ const RegisterUser = () => {
   );
 };
 
-export default RegisterUser;
+export default LoginPage;

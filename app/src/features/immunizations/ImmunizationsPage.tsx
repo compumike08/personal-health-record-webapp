@@ -1,22 +1,27 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import ImmunizationsList from "./ImmunizationsList";
 import NewUpdateImmunization from "./NewUpdateImmunization";
 import { deleteImmunizationAction } from "./immunizationsSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RootState } from "../../store";
 
 const ImmunizationsPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const [selectedCurrentImzUuid, setSelectedCurrentImzUuid] = useState(null);
+  const [selectedCurrentImzUuid, setSelectedCurrentImzUuid] = useState<
+    string | null
+  >(null);
 
-  const selectImmunizationsList = (state) =>
+  const selectImmunizationsList = (state: RootState) =>
     state.immunizationsData.immunizationsList;
 
-  const selectCurrentImmunizationUuid = (_state, currentImmunizationUuid) =>
-    currentImmunizationUuid;
+  const selectCurrentImmunizationUuid = (
+    _state: RootState,
+    currentImmunizationUuid: string | null
+  ) => currentImmunizationUuid;
 
   const selectCurrentImmunization = createSelector(
     [selectImmunizationsList, selectCurrentImmunizationUuid],
@@ -32,11 +37,11 @@ const ImmunizationsPage = () => {
     }
   );
 
-  const currentImmunization = useSelector((state) =>
+  const currentImmunization = useAppSelector((state) =>
     selectCurrentImmunization(state, selectedCurrentImzUuid)
   );
 
-  const onUpdateImmunization = (immunizationUuid) => {
+  const onUpdateImmunization = (immunizationUuid: string) => {
     setSelectedCurrentImzUuid(immunizationUuid);
   };
 
@@ -44,12 +49,12 @@ const ImmunizationsPage = () => {
     setSelectedCurrentImzUuid(null);
   };
 
-  const onDeleteImmunization = async (immunizationUuid) => {
+  const onDeleteImmunization = async (immunizationUuid: string) => {
     try {
       await dispatch(deleteImmunizationAction(immunizationUuid)).unwrap();
 
       toast.success("Immunization deleted successfully");
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message);
     }
   };

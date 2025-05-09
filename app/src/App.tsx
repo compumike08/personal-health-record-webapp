@@ -25,7 +25,7 @@ const App = () => {
         />
         <TitleBar />
         <Routes>
-          <Route exact path="/" element={<AuthLanding />} />
+          <Route path="/" element={<AuthLanding />} />
           <Route path="/registerUser" element={<RegisterUser />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/home" element={<HomePage />} />

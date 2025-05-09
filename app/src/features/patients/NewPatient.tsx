@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { createPatient } from "./patientsSlice";
+import { useAppDispatch } from "../../hooks";
 
 const NewPatient = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const [patientName, setPatientName] = useState("");
   const [isPatientNameError, setIsPatientNameError] = useState(false);
   const [backendErrorMsg, setBackendErrorMsg] = useState(null);
 
-  const handlePatientNameChange = (evt) => {
+  const handlePatientNameChange = (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setPatientName(evt.target.value);
   };
 
@@ -32,14 +34,14 @@ const NewPatient = () => {
 
         toast.success("New patient created successfully");
         setPatientName("");
-      } catch (err) {
+      } catch (err: any) {
         toast.error(err.message);
         setBackendErrorMsg(err.message);
       }
     }
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };

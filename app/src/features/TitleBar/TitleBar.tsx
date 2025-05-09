@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Container, Navbar, Nav, Form, NavDropdown } from "react-bootstrap";
 import {
@@ -8,17 +7,24 @@ import {
 } from "../patients/patientsSlice";
 
 import "./TitleBar.css";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 
 const TitleBar = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const [selectedPatientUuid, setSelectedPatientUuid] = useState("");
+
   const toggle = () => setIsNavbarOpen(!isNavbarOpen);
 
-  const isUserLoggedIn = useSelector((state) => state.authData.isUserLoggedIn);
-  const patientsList = useSelector((state) => state.patientsData.patientsList);
-  const currentPatient = useSelector(
+  const isUserLoggedIn = useAppSelector(
+    (state) => state.authData.isUserLoggedIn
+  );
+  const patientsList = useAppSelector(
+    (state) => state.patientsData.patientsList
+  );
+  const currentPatient = useAppSelector(
     (state) => state.patientsData.currentPatient
   );
   const isCurrentPatientSelected = currentPatient !== null;
@@ -39,11 +45,13 @@ const TitleBar = () => {
     }
   }, [selectedPatientUuid, isUserLoggedIn, dispatch]);
 
-  const handlePatientSelectChange = (evt) => {
+  const handlePatientSelectChange = (
+    evt: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedPatientUuid(evt.target.value);
   };
 
-  const abortSubmit = (evt) => {
+  const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     evt.stopPropagation();
   };

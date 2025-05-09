@@ -1,48 +1,53 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {
-  IDLE_STATUS,
-  LOADING_STATUS,
-  ERROR_STATUS
-} from "../../constants/general";
+import { RequestStates } from "../../constants/general";
 import {
   getImmunizationsForPatient,
   createNewImmunizationForPatient,
   updateImmunization,
   deleteImmunization
 } from "../../api/immunizationsAPI";
+import { Immunization, NewImmunization } from "./immunizations";
 
-const initialState = {
+interface ImmunizationsState {
+  immunizationsList: Immunization[];
+  getImmunizationsForPatientStatus: RequestStates;
+  createNewImmunizationForPatientStatus: RequestStates;
+  updateImmunizationStatus: RequestStates;
+  deleteImmunizationStatus: RequestStates;
+}
+
+const initialState: ImmunizationsState = {
   immunizationsList: [],
-  getImmunizationsForPatientStatus: IDLE_STATUS,
-  createNewImmunizationForPatientStatus: IDLE_STATUS,
-  updateImmunizationStatus: IDLE_STATUS,
-  deleteImmunizationStatus: IDLE_STATUS
+  getImmunizationsForPatientStatus: RequestStates.IDLE_STATUS,
+  createNewImmunizationForPatientStatus: RequestStates.IDLE_STATUS,
+  updateImmunizationStatus: RequestStates.IDLE_STATUS,
+  deleteImmunizationStatus: RequestStates.IDLE_STATUS
 };
 
 export const getImmunizationsForPatientAction = createAsyncThunk(
   "immunizations/getImmunizationsForPatientAction",
-  async (patientUuid) => {
+  async (patientUuid: string) => {
     return await getImmunizationsForPatient(patientUuid);
   }
 );
 
 export const createNewImmunizationForPatientAction = createAsyncThunk(
   "immunizations/createNewImmunizationForPatientAction",
-  async (data) => {
+  async (data: NewImmunization) => {
     return await createNewImmunizationForPatient(data);
   }
 );
 
 export const updateImmunizationAction = createAsyncThunk(
   "immunizations/updateImmunizationAction",
-  async (data) => {
+  async (data: Immunization) => {
     return await updateImmunization(data);
   }
 );
 
 export const deleteImmunizationAction = createAsyncThunk(
   "immunizations/deleteImmunizationAction",
-  async (immunizationUuid) => {
+  async (immunizationUuid: string) => {
     return await deleteImmunization(immunizationUuid);
   }
 );
@@ -58,57 +63,60 @@ export const immunizationsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getImmunizationsForPatientAction.pending, (state) => {
-        state.getImmunizationsForPatientStatus = LOADING_STATUS;
+        state.getImmunizationsForPatientStatus = RequestStates.LOADING_STATUS;
       })
       .addCase(getImmunizationsForPatientAction.fulfilled, (state, action) => {
-        state.getImmunizationsForPatientStatus = IDLE_STATUS;
-        state.immunizationsList = action.payload.map((imz) => {
+        state.getImmunizationsForPatientStatus = RequestStates.IDLE_STATUS;
+        state.immunizationsList = action.payload.map((imz: Immunization) => {
           return {
             ...imz
           };
         });
       })
       .addCase(getImmunizationsForPatientAction.rejected, (state) => {
-        state.getImmunizationsForPatientStatus = ERROR_STATUS;
+        state.getImmunizationsForPatientStatus = RequestStates.ERROR_STATUS;
       })
       .addCase(createNewImmunizationForPatientAction.pending, (state) => {
-        state.createNewImmunizationForPatientStatus = LOADING_STATUS;
+        state.createNewImmunizationForPatientStatus =
+          RequestStates.LOADING_STATUS;
       })
       .addCase(
         createNewImmunizationForPatientAction.fulfilled,
         (state, action) => {
-          state.createNewImmunizationForPatientStatus = IDLE_STATUS;
+          state.createNewImmunizationForPatientStatus =
+            RequestStates.IDLE_STATUS;
           state.immunizationsList.push(Object.assign({}, action.payload));
         }
       )
       .addCase(createNewImmunizationForPatientAction.rejected, (state) => {
-        state.createNewImmunizationForPatientStatus = ERROR_STATUS;
+        state.createNewImmunizationForPatientStatus =
+          RequestStates.ERROR_STATUS;
       })
       .addCase(updateImmunizationAction.pending, (state) => {
-        state.updateImmunizationStatus = LOADING_STATUS;
+        state.updateImmunizationStatus = RequestStates.LOADING_STATUS;
       })
       .addCase(updateImmunizationAction.fulfilled, (state, action) => {
-        state.updateImmunizationStatus = IDLE_STATUS;
+        state.updateImmunizationStatus = RequestStates.IDLE_STATUS;
         const index = state.immunizationsList.findIndex(
           (imz) => imz.immunizationUuid === action.payload.immunizationUuid
         );
         state.immunizationsList[index] = action.payload;
       })
       .addCase(updateImmunizationAction.rejected, (state) => {
-        state.updateImmunizationStatus = ERROR_STATUS;
+        state.updateImmunizationStatus = RequestStates.ERROR_STATUS;
       })
       .addCase(deleteImmunizationAction.pending, (state) => {
-        state.deleteImmunizationStatus = LOADING_STATUS;
+        state.deleteImmunizationStatus = RequestStates.LOADING_STATUS;
       })
       .addCase(deleteImmunizationAction.fulfilled, (state, action) => {
-        state.deleteImmunizationStatus = IDLE_STATUS;
+        state.deleteImmunizationStatus = RequestStates.IDLE_STATUS;
         const index = state.immunizationsList.findIndex(
           (imz) => imz.immunizationUuid === action.payload.immunizationUuid
         );
         state.immunizationsList.splice(index, 1);
       })
       .addCase(deleteImmunizationAction.rejected, (state) => {
-        state.deleteImmunizationStatus = ERROR_STATUS;
+        state.deleteImmunizationStatus = RequestStates.ERROR_STATUS;
       });
   }
 });

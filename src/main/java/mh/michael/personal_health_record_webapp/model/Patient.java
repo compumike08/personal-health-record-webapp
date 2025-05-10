@@ -37,6 +37,9 @@ public class Patient {
   @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
   private List<Medication> medications;
 
+  @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+  private List<Allergy> allergies;
+
   public boolean isPatientLinkedWithUserUuid(UUID userUuid) {
     return getUsers()
       .parallelStream()

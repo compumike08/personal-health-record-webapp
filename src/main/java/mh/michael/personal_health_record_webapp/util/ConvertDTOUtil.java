@@ -133,4 +133,32 @@ public class ConvertDTOUtil {
       .map(ConvertDTOUtil::convertMedicationToMedicationDTO)
       .collect(Collectors.toList());
   }
+
+  public static AllergyDTO convertAllergyToAllergyDTO(Allergy allergy) {
+    return AllergyDTO.builder()
+      .allergyUuid(allergy.getAllergyUuid().toString())
+      .description(allergy.getDescription())
+      .allergyName(allergy.getAllergyName())
+      .isCurrentAllergy(allergy.getIsCurrentAllergy())
+      .allergyEndedDate(
+        allergy.getAllergyEndedDate() == null
+          ? ""
+          : dateFormatter.format(allergy.getAllergyEndedDate())
+      )
+      .allergyStartedDate(
+        allergy.getAllergyStartedDate() == null
+          ? ""
+          : dateFormatter.format(allergy.getAllergyStartedDate())
+      )
+      .build();
+  }
+
+  public static List<AllergyDTO> convertAllergyListToAllergyDTOList(
+    List<Allergy> allergyList
+  ) {
+    return allergyList
+      .stream()
+      .map(ConvertDTOUtil::convertAllergyToAllergyDTO)
+      .collect(Collectors.toList());
+  }
 }

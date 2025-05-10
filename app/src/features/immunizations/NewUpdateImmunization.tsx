@@ -88,64 +88,72 @@ const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
     }
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    reinitializeValidationErrors();
+      reinitializeValidationErrors();
 
-    if (isNil(immunizationName) || immunizationName.length < 1) {
-      isError = true;
-      setIsImmunizationNameError(true);
-    }
-
-    if (
-      isNil(immunizationDateString) ||
-      immunizationDateString.length < 1 ||
-      !dayjs(immunizationDateString, DATE_FORMAT, true).isValid()
-    ) {
-      isError = true;
-      setIsImmunizationDateStringError(true);
-    }
-
-    if (!isError) {
-      try {
-        if (isUpdate && currentImmunization) {
-          const data: Immunization = {
-            immunizationUuid: currentImmunization.immunizationUuid,
-            immunizationName: immunizationName,
-            immunizationDate: immunizationDateString,
-            providerName: providerName,
-            providerLocation: providerLocation,
-            description: description
-          };
-          await dispatch(updateImmunizationAction(data)).unwrap();
-        } else if (!isUpdate && currentPatient) {
-          const data: NewImmunization = {
-            patientUuid: currentPatient.patientUuid,
-            immunizationName: immunizationName,
-            immunizationDate: immunizationDateString,
-            providerName: providerName,
-            providerLocation: providerLocation,
-            description: description
-          };
-          await dispatch(createNewImmunizationForPatientAction(data)).unwrap();
-        } else {
-          throw new Error(
-            "Invalid combination of states when attempting to dispatch create or update immunization action"
-          );
-        }
-
-        reinitializeValidationErrors();
-        reinitializeInputs();
-
-        toast.success("Immunization saved successfully");
-        submitComplete();
-      } catch (err) {
-        const error = err as SerializedError;
-        toast.error(error.message);
-        setBackendErrorMsg(error.message);
+      if (isNil(immunizationName) || immunizationName.length < 1) {
+        isError = true;
+        setIsImmunizationNameError(true);
       }
-    }
+
+      if (
+        isNil(immunizationDateString) ||
+        immunizationDateString.length < 1 ||
+        !dayjs(immunizationDateString, DATE_FORMAT, true).isValid()
+      ) {
+        isError = true;
+        setIsImmunizationDateStringError(true);
+      }
+
+      if (!isError) {
+        try {
+          if (isUpdate && currentImmunization) {
+            const data: Immunization = {
+              immunizationUuid: currentImmunization.immunizationUuid,
+              immunizationName: immunizationName,
+              immunizationDate: immunizationDateString,
+              providerName: providerName,
+              providerLocation: providerLocation,
+              description: description
+            };
+
+            await dispatch(updateImmunizationAction(data)).unwrap();
+          } else if (!isUpdate && currentPatient) {
+            const data: NewImmunization = {
+              patientUuid: currentPatient.patientUuid,
+              immunizationName: immunizationName,
+              immunizationDate: immunizationDateString,
+              providerName: providerName,
+              providerLocation: providerLocation,
+              description: description
+            };
+
+            await dispatch(
+              createNewImmunizationForPatientAction(data)
+            ).unwrap();
+          } else {
+            throw new Error(
+              "Invalid combination of states when attempting to dispatch create or update immunization action"
+            );
+          }
+
+          reinitializeValidationErrors();
+          reinitializeInputs();
+
+          toast.success("Immunization saved successfully");
+          submitComplete();
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

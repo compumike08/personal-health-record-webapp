@@ -9,12 +9,18 @@ import ts from "typescript-eslint";
 export default [
   { languageOptions: { globals: globals.browser } },
   js.configs.recommended,
-  ...ts.configs.recommended,
+  ...ts.configs.recommendedTypeChecked,
   ...fixupConfigRules([
     {
       ...react,
       settings: {
         react: { version: "detect" }
+      },
+      languageOptions: {
+        parserOptions: {
+          projectService: true,
+          tsconfigRootDir: import.meta.dirname
+        }
       }
     },
     reactJsx
@@ -29,5 +35,5 @@ export default [
       "react/prop-types": "off"
     }
   },
-  { ignores: ["**/dist/*"] }
+  { ignores: ["**/dist/*", "rsbuild.config.mjs", "eslint.config.mjs"] }
 ];

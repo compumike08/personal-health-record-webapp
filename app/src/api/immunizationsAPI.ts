@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import {
   Immunization,
   NewImmunization
@@ -11,13 +11,14 @@ export async function getImmunizationsForPatient(
   const url = `/api/immunizations/patient/${patientUuid}`;
 
   try {
-    const response = await axios.get(url);
+    const response: AxiosResponse<Immunization[]> = await axios.get(url);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -30,13 +31,14 @@ export async function createNewImmunizationForPatient(
   const url = `/api/immunizations/createImmunization`;
 
   try {
-    const response = await axios.post(url, data);
+    const response: AxiosResponse<Immunization> = await axios.post(url, data);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -49,13 +51,14 @@ export async function updateImmunization(
   const url = `/api/immunizations/immunization`;
 
   try {
-    const response = await axios.put(url, data);
+    const response: AxiosResponse<Immunization> = await axios.put(url, data);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -68,13 +71,14 @@ export async function deleteImmunization(
   const url = `/api/immunizations/immunization/${immunizationUuid}`;
 
   try {
-    const response = await axios.delete(url);
+    const response: AxiosResponse<Immunization> = await axios.delete(url);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);

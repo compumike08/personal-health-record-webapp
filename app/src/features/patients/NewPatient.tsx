@@ -20,29 +20,33 @@ const NewPatient = () => {
     setPatientName(evt.target.value);
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    setIsPatientNameError(false);
-    setBackendErrorMsg(null);
+      setIsPatientNameError(false);
+      setBackendErrorMsg(null);
 
-    if (patientName === null || patientName.length < 1) {
-      isError = true;
-      setIsPatientNameError(true);
-    }
-
-    if (isError === false) {
-      try {
-        await dispatch(createPatient(patientName)).unwrap();
-
-        toast.success("New patient created successfully");
-        setPatientName("");
-      } catch (err) {
-        const error = err as SerializedError;
-        toast.error(error.message);
-        setBackendErrorMsg(error.message);
+      if (patientName === null || patientName.length < 1) {
+        isError = true;
+        setIsPatientNameError(true);
       }
-    }
+
+      if (isError === false) {
+        try {
+          await dispatch(createPatient(patientName)).unwrap();
+
+          toast.success("New patient created successfully");
+          setPatientName("");
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

@@ -74,7 +74,9 @@ const ImmunizationsList: React.FC<ImmunizationsListProps> = ({
       !isNil(currentPatient.patientUuid) &&
       currentPatient.patientUuid.length > 0
     ) {
-      dispatch(getImmunizationsForPatientAction(currentPatient.patientUuid));
+      void dispatch(
+        getImmunizationsForPatientAction(currentPatient.patientUuid)
+      );
     }
   }, [dispatch, currentPatient]);
 
@@ -89,7 +91,7 @@ const ImmunizationsList: React.FC<ImmunizationsListProps> = ({
 
   const handleConfirmDelete = () => {
     if (deleteImzUuid) {
-      onDeleteImmunization(deleteImzUuid);
+      void onDeleteImmunization(deleteImzUuid);
       hideConfirmDelete();
     } else {
       throw new Error(

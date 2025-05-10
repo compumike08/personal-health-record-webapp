@@ -145,81 +145,85 @@ const NewUpdateMedication: React.FC<NewUpdateMedicationProps> = ({
     setMedNotes("");
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    reinitializeValidationErrors();
+      reinitializeValidationErrors();
 
-    if (isNil(medName) || medName.length < 1) {
-      isError = true;
-      setIsMedNameError(true);
-    }
-
-    if (
-      !isNil(medStartDateString) &&
-      medStartDateString.length > 0 &&
-      !dayjs(medStartDateString, DATE_FORMAT, true).isValid()
-    ) {
-      isError = true;
-      setIsMedStartDateStringError(true);
-    }
-
-    if (
-      !isNil(medEndDateString) &&
-      medEndDateString.length > 0 &&
-      !dayjs(medEndDateString, DATE_FORMAT, true).isValid()
-    ) {
-      isError = true;
-      setIsMedEndDateStringError(true);
-    }
-
-    if (!isError) {
-      try {
-        if (isUpdate && currentMedication) {
-          const data = {
-            medicationUuid: currentMedication.medicationUuid,
-            medicationName: medName,
-            isCurrentlyTaking: isCurrentlyTakingMed,
-            medicationStartDate: medStartDateString,
-            medicationEndDate: medEndDateString,
-            dosage:
-              medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
-            dosageUnit: medDosageUnit,
-            notes: medNotes
-          };
-
-          await dispatch(updateMedicationAction(data)).unwrap();
-        } else if (!isUpdate && currentPatient) {
-          const data = {
-            patientUuid: currentPatient.patientUuid,
-            medicationName: medName,
-            isCurrentlyTaking: isCurrentlyTakingMed,
-            medicationStartDate: medStartDateString,
-            medicationEndDate: medEndDateString,
-            dosage:
-              medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
-            dosageUnit: medDosageUnit,
-            notes: medNotes
-          };
-
-          await dispatch(createNewMedicationForPatientAction(data)).unwrap();
-        } else {
-          throw new Error(
-            "Invalid combination of states when attempting to dispatch create or update medication action"
-          );
-        }
-
-        reinitializeValidationErrors();
-        reinitializeInputs();
-
-        toast.success("Medication saved successfully");
-        submitComplete();
-      } catch (err) {
-        const error = err as SerializedError;
-        toast.error(error.message);
-        setBackendErrorMsg(error.message);
+      if (isNil(medName) || medName.length < 1) {
+        isError = true;
+        setIsMedNameError(true);
       }
-    }
+
+      if (
+        !isNil(medStartDateString) &&
+        medStartDateString.length > 0 &&
+        !dayjs(medStartDateString, DATE_FORMAT, true).isValid()
+      ) {
+        isError = true;
+        setIsMedStartDateStringError(true);
+      }
+
+      if (
+        !isNil(medEndDateString) &&
+        medEndDateString.length > 0 &&
+        !dayjs(medEndDateString, DATE_FORMAT, true).isValid()
+      ) {
+        isError = true;
+        setIsMedEndDateStringError(true);
+      }
+
+      if (!isError) {
+        try {
+          if (isUpdate && currentMedication) {
+            const data = {
+              medicationUuid: currentMedication.medicationUuid,
+              medicationName: medName,
+              isCurrentlyTaking: isCurrentlyTakingMed,
+              medicationStartDate: medStartDateString,
+              medicationEndDate: medEndDateString,
+              dosage:
+                medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
+              dosageUnit: medDosageUnit,
+              notes: medNotes
+            };
+
+            await dispatch(updateMedicationAction(data)).unwrap();
+          } else if (!isUpdate && currentPatient) {
+            const data = {
+              patientUuid: currentPatient.patientUuid,
+              medicationName: medName,
+              isCurrentlyTaking: isCurrentlyTakingMed,
+              medicationStartDate: medStartDateString,
+              medicationEndDate: medEndDateString,
+              dosage:
+                medDosage && medDosage.length > 0 ? toNumber(medDosage) : null,
+              dosageUnit: medDosageUnit,
+              notes: medNotes
+            };
+
+            await dispatch(createNewMedicationForPatientAction(data)).unwrap();
+          } else {
+            throw new Error(
+              "Invalid combination of states when attempting to dispatch create or update medication action"
+            );
+          }
+
+          reinitializeValidationErrors();
+          reinitializeInputs();
+
+          toast.success("Medication saved successfully");
+          submitComplete();
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

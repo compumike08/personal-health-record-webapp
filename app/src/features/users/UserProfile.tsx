@@ -25,7 +25,7 @@ const UserProfile = () => {
   >(null);
 
   useEffect(() => {
-    async function getCurrentUser() {
+    const handler = async () => {
       try {
         await dispatch(getUserProfileAction()).unwrap();
       } catch (err) {
@@ -33,9 +33,9 @@ const UserProfile = () => {
         toast.error(error.message);
         setBackendErrorMsg(error.message);
       }
-    }
+    };
 
-    getCurrentUser();
+    void handler();
   }, [dispatch, setBackendErrorMsg]);
 
   useEffect(() => {
@@ -51,39 +51,43 @@ const UserProfile = () => {
     setEmail(evt.target.value);
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    setIsUsernameError(false);
-    setIsEmailError(false);
-    setBackendErrorMsg(null);
+      setIsUsernameError(false);
+      setIsEmailError(false);
+      setBackendErrorMsg(null);
 
-    if (username === null || username.length < 1) {
-      isError = true;
-      setIsUsernameError(true);
-    }
-
-    if (email === null || email.length < 1) {
-      isError = true;
-      setIsEmailError(true);
-    }
-
-    if (isError === false) {
-      try {
-        await dispatch(
-          editUserProfileAction({
-            username: username,
-            email: email
-          })
-        ).unwrap();
-
-        toast.success("User profile successfully updated");
-      } catch (err) {
-        const error = err as SerializedError;
-        toast.error(error.message);
-        setBackendErrorMsg(error.message);
+      if (username === null || username.length < 1) {
+        isError = true;
+        setIsUsernameError(true);
       }
-    }
+
+      if (email === null || email.length < 1) {
+        isError = true;
+        setIsEmailError(true);
+      }
+
+      if (isError === false) {
+        try {
+          await dispatch(
+            editUserProfileAction({
+              username: username,
+              email: email
+            })
+          ).unwrap();
+
+          toast.success("User profile successfully updated");
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

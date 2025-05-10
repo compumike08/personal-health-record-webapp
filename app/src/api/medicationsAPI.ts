@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { Medication, NewMedication } from "../features/medications/medications";
 import { GENERIC_ERR_MSG } from "../constants/general";
 
@@ -8,13 +8,14 @@ export async function getMedicationsForPatient(
   const url = `/api/medications/patient/${patientUuid}`;
 
   try {
-    const response = await axios.get(url);
+    const response: AxiosResponse<Medication[]> = await axios.get(url);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -27,13 +28,14 @@ export async function createNewMedicationForPatient(
   const url = `/api/medications/createMedication`;
 
   try {
-    const response = await axios.post(url, data);
+    const response: AxiosResponse<Medication> = await axios.post(url, data);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -44,13 +46,14 @@ export async function updateMedication(data: Medication): Promise<Medication> {
   const url = `/api/medications/medication`;
 
   try {
-    const response = await axios.put(url, data);
+    const response: AxiosResponse<Medication> = await axios.put(url, data);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);
@@ -63,13 +66,14 @@ export async function deleteMedication(
   const url = `/api/medications/medication/${medicationUuid}`;
 
   try {
-    const response = await axios.delete(url);
+    const response: AxiosResponse<Medication> = await axios.delete(url);
     return response.data;
   } catch (err) {
     console.log(err);
 
     if (axios.isAxiosError(err) && err.response) {
-      throw new Error(err.response.data.message);
+      const error = err as AxiosError<Error>;
+      throw new Error(error.response?.data.message);
     }
 
     throw new Error(GENERIC_ERR_MSG);

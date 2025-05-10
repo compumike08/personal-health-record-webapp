@@ -25,38 +25,42 @@ const LoginPage = () => {
     setPassword(evt.target.value);
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    setIsUsernameError(false);
-    setIsPasswordError(false);
-    setBackendErrorMsg(null);
+      setIsUsernameError(false);
+      setIsPasswordError(false);
+      setBackendErrorMsg(null);
 
-    if (username === null || username.length < 1) {
-      isError = true;
-      setIsUsernameError(true);
-    }
-
-    if (password === null || password.length < 1) {
-      isError = true;
-      setIsPasswordError(true);
-    }
-
-    if (isError === false) {
-      try {
-        await dispatch(
-          loginAction({
-            username: username,
-            password: password
-          })
-        ).unwrap();
-
-        navigate("/home");
-      } catch (err) {
-        const error = err as SerializedError;
-        setBackendErrorMsg(error.message);
+      if (username === null || username.length < 1) {
+        isError = true;
+        setIsUsernameError(true);
       }
-    }
+
+      if (password === null || password.length < 1) {
+        isError = true;
+        setIsPasswordError(true);
+      }
+
+      if (isError === false) {
+        try {
+          await dispatch(
+            loginAction({
+              username: username,
+              password: password
+            })
+          ).unwrap();
+
+          void navigate("/home");
+        } catch (err) {
+          const error = err as SerializedError;
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

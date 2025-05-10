@@ -31,7 +31,7 @@ const TitleBar = () => {
 
   useEffect(() => {
     if (isUserLoggedIn) {
-      dispatch(getCurrentUsersPatientsList());
+      void dispatch(getCurrentUsersPatientsList());
     }
 
     if (!isUserLoggedIn) {
@@ -41,7 +41,7 @@ const TitleBar = () => {
 
   useEffect(() => {
     if (isUserLoggedIn && selectedPatientUuid.length > 0) {
-      dispatch(getPatientByPatientUuidAction(selectedPatientUuid));
+      void dispatch(getPatientByPatientUuidAction(selectedPatientUuid));
     }
   }, [selectedPatientUuid, isUserLoggedIn, dispatch]);
 
@@ -102,7 +102,7 @@ const TitleBar = () => {
                         <NavDropdown.Item
                           className="nav-link"
                           onClick={() => {
-                            navigate("/immunizations");
+                            void navigate("/immunizations");
                           }}
                         >
                           Immunizations
@@ -112,7 +112,7 @@ const TitleBar = () => {
                         <NavDropdown.Item
                           className="nav-link"
                           onClick={() => {
-                            navigate("/medications");
+                            void navigate("/medications");
                           }}
                         >
                           Medications

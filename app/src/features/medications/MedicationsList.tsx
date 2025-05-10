@@ -68,7 +68,7 @@ const MedicationsList: React.FC<MedicationsListProps> = ({
 
   const handleConfirmDelete = () => {
     if (deleteMedUuid) {
-      onDeleteMedication(deleteMedUuid);
+      void onDeleteMedication(deleteMedUuid);
       hideConfirmDelete();
     } else {
       throw new Error(
@@ -89,7 +89,7 @@ const MedicationsList: React.FC<MedicationsListProps> = ({
       !isNil(currentPatient.patientUuid) &&
       currentPatient.patientUuid.length > 0
     ) {
-      dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
+      void dispatch(getMedicationsForPatientAction(currentPatient.patientUuid));
     }
   }, [dispatch, currentPatient]);
 

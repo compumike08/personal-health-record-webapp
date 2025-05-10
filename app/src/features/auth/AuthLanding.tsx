@@ -5,11 +5,11 @@ const AuthLanding = () => {
   const navigate = useNavigate();
 
   const handleRegisterUser = () => {
-    navigate("/registerUser");
+    void navigate("/registerUser");
   };
 
   const handleLogin = () => {
-    navigate("/login");
+    void navigate("/login");
   };
 
   return (

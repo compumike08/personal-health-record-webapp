@@ -13,7 +13,7 @@ const LogoutPage = () => {
     dispatch(resetPatientsData());
     dispatch(resetMedicationsList());
     dispatch(resetAuthData());
-    navigate("/");
+    void navigate("/");
   }, [dispatch, navigate]);
 
   return <></>;

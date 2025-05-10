@@ -42,60 +42,64 @@ const RegisterUser = () => {
     setReenteredPassword(evt.target.value);
   };
 
-  const handleSubmit = async () => {
-    let isError = false;
+  const handleSubmit = () => {
+    const handler = async () => {
+      let isError = false;
 
-    setIsUsernameError(false);
-    setIsEmailError(false);
-    setIsPasswordError(false);
-    setIsReenteredPasswordError(false);
-    setIsPasswordsNotMatch(false);
-    setBackendErrorMsg(null);
+      setIsUsernameError(false);
+      setIsEmailError(false);
+      setIsPasswordError(false);
+      setIsReenteredPasswordError(false);
+      setIsPasswordsNotMatch(false);
+      setBackendErrorMsg(null);
 
-    if (username === null || username.length < 1) {
-      isError = true;
-      setIsUsernameError(true);
-    }
-
-    if (email === null || email.length < 1) {
-      isError = false;
-      setIsEmailError(true);
-    }
-
-    if (password === null || password.length < 1) {
-      isError = true;
-      setIsPasswordError(true);
-    }
-
-    if (reenteredPassword === null || reenteredPassword.length < 1) {
-      isError = true;
-      setIsReenteredPasswordError(true);
-    }
-
-    if (password !== reenteredPassword) {
-      isError = true;
-      setIsReenteredPasswordError(true);
-      setIsPasswordsNotMatch(true);
-    }
-
-    if (isError === false) {
-      try {
-        await dispatch(
-          registerUserAction({
-            username: username,
-            email: email,
-            password: password
-          })
-        ).unwrap();
-
-        toast.success("New user successfully registered");
-        navigate("/login");
-      } catch (err) {
-        const error = err as SerializedError;
-        toast.error(error.message);
-        setBackendErrorMsg(error.message);
+      if (username === null || username.length < 1) {
+        isError = true;
+        setIsUsernameError(true);
       }
-    }
+
+      if (email === null || email.length < 1) {
+        isError = false;
+        setIsEmailError(true);
+      }
+
+      if (password === null || password.length < 1) {
+        isError = true;
+        setIsPasswordError(true);
+      }
+
+      if (reenteredPassword === null || reenteredPassword.length < 1) {
+        isError = true;
+        setIsReenteredPasswordError(true);
+      }
+
+      if (password !== reenteredPassword) {
+        isError = true;
+        setIsReenteredPasswordError(true);
+        setIsPasswordsNotMatch(true);
+      }
+
+      if (isError === false) {
+        try {
+          await dispatch(
+            registerUserAction({
+              username: username,
+              email: email,
+              password: password
+            })
+          ).unwrap();
+
+          toast.success("New user successfully registered");
+          await navigate("/login");
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+          setBackendErrorMsg(error.message);
+        }
+      }
+    };
+
+    void handler();
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {

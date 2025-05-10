@@ -3,6 +3,7 @@ import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { isNil } from "lodash";
 import dayjs from "dayjs";
+import { SerializedError } from "@reduxjs/toolkit";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
 import {
@@ -30,7 +31,9 @@ const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
   const [immunizationName, setImmunizationName] = useState("");
   const [isImmunizationNameError, setIsImmunizationNameError] = useState(false);
   const [immunizationDateString, setImmunizationDateString] = useState("");
@@ -137,9 +140,10 @@ const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
 
         toast.success("Immunization saved successfully");
         submitComplete();
-      } catch (err: any) {
-        toast.error(err.message);
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
   };

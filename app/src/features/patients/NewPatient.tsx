@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { createPatient } from "./patientsSlice";
@@ -9,7 +10,9 @@ const NewPatient = () => {
 
   const [patientName, setPatientName] = useState("");
   const [isPatientNameError, setIsPatientNameError] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
 
   const handlePatientNameChange = (
     evt: React.ChangeEvent<HTMLInputElement>
@@ -34,9 +37,10 @@ const NewPatient = () => {
 
         toast.success("New patient created successfully");
         setPatientName("");
-      } catch (err: any) {
-        toast.error(err.message);
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
   };

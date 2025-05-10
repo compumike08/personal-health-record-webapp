@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { SerializedError } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { registerUserAction } from "./authSlice";
@@ -19,7 +20,9 @@ const RegisterUser = () => {
   const [isReenteredPasswordError, setIsReenteredPasswordError] =
     useState(false);
   const [isPasswordsNotMatch, setIsPasswordsNotMatch] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
 
   const handleUsernameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(evt.target.value);
@@ -87,9 +90,10 @@ const RegisterUser = () => {
 
         toast.success("New user successfully registered");
         navigate("/login");
-      } catch (err: any) {
-        toast.error(err.message);
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
   };

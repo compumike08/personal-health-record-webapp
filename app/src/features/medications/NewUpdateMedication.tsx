@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { SerializedError } from "@reduxjs/toolkit";
 import { isNil, toNumber } from "lodash";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
@@ -29,7 +30,9 @@ const NewUpdateMedication: React.FC<NewUpdateMedicationProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
   const [medName, setMedName] = useState("");
   const [isMedNameError, setIsMedNameError] = useState(false);
   const [isCurrentlyTakingMed, setIsCurrentlyTakingMed] = useState(false);
@@ -211,9 +214,10 @@ const NewUpdateMedication: React.FC<NewUpdateMedicationProps> = ({
 
         toast.success("Medication saved successfully");
         submitComplete();
-      } catch (err: any) {
-        toast.error(err.message);
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
   };

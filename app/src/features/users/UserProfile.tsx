@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import {
@@ -19,14 +20,18 @@ const UserProfile = () => {
   const [email, setEmail] = useState("");
   const [isUsernameError, setIsUsernameError] = useState(false);
   const [isEmailError, setIsEmailError] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
 
   useEffect(() => {
     async function getCurrentUser() {
       try {
         await dispatch(getUserProfileAction()).unwrap();
-      } catch (err: any) {
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
 
@@ -73,9 +78,10 @@ const UserProfile = () => {
         ).unwrap();
 
         toast.success("User profile successfully updated");
-      } catch (err: any) {
-        toast.error(err.message);
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        toast.error(error.message);
+        setBackendErrorMsg(error.message);
       }
     }
   };

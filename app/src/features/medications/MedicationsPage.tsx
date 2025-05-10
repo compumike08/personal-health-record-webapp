@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createSelector } from "@reduxjs/toolkit";
+import { createSelector, SerializedError } from "@reduxjs/toolkit";
 import { Container, Row, Col } from "react-bootstrap";
 import { toast } from "react-toastify";
 import NewUpdateMedication from "./NewUpdateMedication";
@@ -53,8 +53,9 @@ const MedicationsPage = () => {
       await dispatch(deleteMedicationAction(medicationUuid)).unwrap();
 
       toast.success("Medication deleted successfully");
-    } catch (err: any) {
-      toast.error(err.message);
+    } catch (err) {
+      const error = err as SerializedError;
+      toast.error(error.message);
     }
   };
 

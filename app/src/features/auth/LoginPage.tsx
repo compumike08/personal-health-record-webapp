@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { SerializedError } from "@reduxjs/toolkit";
 import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
 import { loginAction } from "./authSlice";
 import { useAppDispatch } from "../../hooks";
@@ -12,7 +13,9 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [isUsernameError, setIsUsernameError] = useState(false);
   const [isPasswordError, setIsPasswordError] = useState(false);
-  const [backendErrorMsg, setBackendErrorMsg] = useState<string | null>(null);
+  const [backendErrorMsg, setBackendErrorMsg] = useState<
+    string | null | undefined
+  >(null);
 
   const handleUsernameChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(evt.target.value);
@@ -49,8 +52,9 @@ const LoginPage = () => {
         ).unwrap();
 
         navigate("/home");
-      } catch (err: any) {
-        setBackendErrorMsg(err.message);
+      } catch (err) {
+        const error = err as SerializedError;
+        setBackendErrorMsg(error.message);
       }
     }
   };

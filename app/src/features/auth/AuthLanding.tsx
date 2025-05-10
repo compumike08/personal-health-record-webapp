@@ -1,5 +1,5 @@
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Button } from "react-bootstrap";
 
 const AuthLanding = () => {
   const navigate = useNavigate();

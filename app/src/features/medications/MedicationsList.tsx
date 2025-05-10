@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
 import { createSelector } from "@reduxjs/toolkit";
-import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
-import { getMedicationsForPatientAction } from "./medicationsSlice";
+import { useEffect, useState } from "react";
+import { Accordion, Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RootState } from "../../store";
+import { getMedicationsForPatientAction } from "./medicationsSlice";
 
 interface OnDeleteMedicationFunction {
   (medicationUuid: string): Promise<void>;

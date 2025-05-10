@@ -1,18 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import AuthLanding from "./features/auth/AuthLanding";
-import RegisterUser from "./features/auth/RegisterUser";
 import LoginPage from "./features/auth/LoginPage";
-import TitleBar from "./features/TitleBar/TitleBar";
-import HomePage from "./features/home/HomePage";
 import LogoutPage from "./features/auth/LogoutPage";
-import UserProfile from "./features/users/UserProfile";
-import NewPatient from "./features/patients/NewPatient";
-import MedicationsPage from "./features/medications/MedicationsPage";
+import RegisterUser from "./features/auth/RegisterUser";
+import GlobalSpinner from "./features/globalSpinner/GlobalSpinner";
+import HomePage from "./features/home/HomePage";
 import ImmunizationsPage from "./features/immunizations/ImmunizationsPage";
+import MedicationsPage from "./features/medications/MedicationsPage";
+import NewPatient from "./features/patients/NewPatient";
+import TitleBar from "./features/TitleBar/TitleBar";
+import UserProfile from "./features/users/UserProfile";
 
 import "./App.css";
-import GlobalSpinner from "./features/globalSpinner/GlobalSpinner";
 
 const App = () => {
   return (

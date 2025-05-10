@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Patient } from "../features/patients/patient";
 import { GENERIC_ERR_MSG } from "../constants/general";
+import { Patient } from "../features/patients/patient";
 
 export async function getCurrentUserPatientList(): Promise<Patient[]> {
   const url = `/api/patients/currentUsersPatients`;

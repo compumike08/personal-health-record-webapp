@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { RequestStates } from "../../constants/general";
 import {
-  getImmunizationsForPatient,
   createNewImmunizationForPatient,
-  updateImmunization,
-  deleteImmunization
+  deleteImmunization,
+  getImmunizationsForPatient,
+  updateImmunization
 } from "../../api/immunizationsAPI";
+import { RequestStates } from "../../constants/general";
 import { Immunization, NewImmunization } from "./immunizations";
 
 interface ImmunizationsState {

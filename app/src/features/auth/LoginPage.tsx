@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
-import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
-import { loginAction } from "./authSlice";
+import { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../hooks";
+import { loginAction } from "./authSlice";
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();

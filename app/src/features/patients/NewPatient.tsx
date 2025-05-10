@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
-import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
+import { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { createPatient } from "./patientsSlice";
 import { useAppDispatch } from "../../hooks";
+import { createPatient } from "./patientsSlice";
 
 const NewPatient = () => {
   const dispatch = useAppDispatch();

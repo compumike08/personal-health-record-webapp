@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { SerializedError } from "@reduxjs/toolkit";
+import { useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
-import { registerUserAction } from "./authSlice";
 import { useAppDispatch } from "../../hooks";
+import { registerUserAction } from "./authSlice";
 
 const RegisterUser = () => {
   const dispatch = useAppDispatch();

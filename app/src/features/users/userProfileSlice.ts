@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { editCurrentUser, getCurrentUser } from "../../api/userAPI";
 import { RequestStates } from "../../constants/general";
-import { getCurrentUser, editCurrentUser } from "../../api/userAPI";
 import { EditUser } from "./users";
 
 interface UserProfileState {

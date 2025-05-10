@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { RequestStates } from "../../constants/general";
 import {
   createNewPatient,
   getCurrentUserPatientList,
   getPatientByPatientUuid
 } from "../../api/patientAPI";
+import { RequestStates } from "../../constants/general";
 import { Patient } from "./patient";
 
 interface PaitentsState {

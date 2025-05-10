@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { EditUser, User } from "../features/users/users";
 import { GENERIC_ERR_MSG } from "../constants/general";
+import { EditUser, User } from "../features/users/users";
 
 export async function getCurrentUser(): Promise<User> {
   const url = `/api/users/currentUser`;

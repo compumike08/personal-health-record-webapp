@@ -4,8 +4,8 @@ import {
   GENERIC_ERR_MSG,
   TOKEN_SESSION_ATTRIBUTE_NAME
 } from "../constants/general";
-import { NewUser, User } from "../features/users/users";
 import { AuthRequest, AuthResponse } from "../features/auth/auth";
+import { NewUser, User } from "../features/users/users";
 
 let axiosHeaderInterceptor: number | null = null;
 

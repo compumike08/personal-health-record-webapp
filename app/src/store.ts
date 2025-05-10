@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authSlice from "./features/auth/authSlice";
-import userProfileSlice from "./features/users/userProfileSlice";
-import patientsSlice from "./features/patients/patientsSlice";
-import medicationsSlice from "./features/medications/medicationsSlice";
-import immunizationsSlice from "./features/immunizations/immunizationsSlice";
 import globalSpinnerSlice from "./features/globalSpinner/globalSpinnerSlice";
+import immunizationsSlice from "./features/immunizations/immunizationsSlice";
+import medicationsSlice from "./features/medications/medicationsSlice";
+import patientsSlice from "./features/patients/patientsSlice";
+import userProfileSlice from "./features/users/userProfileSlice";
 
 export const store = configureStore({
   reducer: {

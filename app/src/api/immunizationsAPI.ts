@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { GENERIC_ERR_MSG } from "../constants/general";
 import {
   Immunization,
   NewImmunization
 } from "../features/immunizations/immunizations";
-import { GENERIC_ERR_MSG } from "../constants/general";
 
 export async function getImmunizationsForPatient(
   patientUuid: string

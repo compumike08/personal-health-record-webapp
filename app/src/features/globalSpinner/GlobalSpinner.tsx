@@ -1,4 +1,5 @@
 import { useAppSelector } from "../../hooks";
+
 import "./GlobalSpinner.css";
 
 const GlobalSpinner = () => {

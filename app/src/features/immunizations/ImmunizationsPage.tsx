@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { createSelector, SerializedError } from "@reduxjs/toolkit";
-import { Container, Row, Col } from "react-bootstrap";
+import { useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { RootState } from "../../store";
 import ImmunizationsList from "./ImmunizationsList";
 import NewUpdateImmunization from "./NewUpdateImmunization";
 import { deleteImmunizationAction } from "./immunizationsSlice";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { RootState } from "../../store";
 
 const ImmunizationsPage = () => {
   const dispatch = useAppDispatch();

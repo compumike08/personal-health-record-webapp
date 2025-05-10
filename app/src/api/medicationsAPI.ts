@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { Medication, NewMedication } from "../features/medications/medications";
 import { GENERIC_ERR_MSG } from "../constants/general";
+import { Medication, NewMedication } from "../features/medications/medications";
 
 export async function getMedicationsForPatient(
   patientUuid: string

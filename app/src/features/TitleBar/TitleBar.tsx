@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Container, Navbar, Nav, Form, NavDropdown } from "react-bootstrap";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import {
   getCurrentUsersPatientsList,
   getPatientByPatientUuidAction
 } from "../patients/patientsSlice";
 
 import "./TitleBar.css";
-import { useAppDispatch, useAppSelector } from "../../hooks";
 
 const TitleBar = () => {
   const dispatch = useAppDispatch();

@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
 import { SerializedError } from "@reduxjs/toolkit";
+import { useEffect, useState } from "react";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { Container, Row, Col, Button, Alert, Form } from "react-bootstrap";
-import {
-  getUserProfileAction,
-  editUserProfileAction
-} from "./userProfileSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks";
+import {
+  editUserProfileAction,
+  getUserProfileAction
+} from "./userProfileSlice";
 
 const UserProfile = () => {
   const dispatch = useAppDispatch();

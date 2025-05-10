@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { authenticate, logout, registerUser } from "../../api/authAPI";
 import { RequestStates } from "../../constants/general";
-import { registerUser, authenticate, logout } from "../../api/authAPI";
 import { NewUser } from "../users/users";
 import { AuthRequest } from "./auth";
 

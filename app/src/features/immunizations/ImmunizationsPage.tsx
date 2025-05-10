@@ -70,7 +70,11 @@ const ImmunizationsPage = () => {
         <Col md="6" className="mb-4">
           <Row>
             <Col>
-              <h6>New Immunization</h6>
+              <h6>
+                {currentImmunization !== null
+                  ? "Update Immunization"
+                  : "New Immunization"}
+              </h6>
             </Col>
           </Row>
           <NewUpdateImmunization

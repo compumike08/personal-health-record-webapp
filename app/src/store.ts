@@ -4,6 +4,7 @@ import userProfileSlice from "./features/users/userProfileSlice";
 import patientsSlice from "./features/patients/patientsSlice";
 import medicationsSlice from "./features/medications/medicationsSlice";
 import immunizationsSlice from "./features/immunizations/immunizationsSlice";
+import globalSpinnerSlice from "./features/globalSpinner/globalSpinnerSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
     userProfileData: userProfileSlice,
     patientsData: patientsSlice,
     medicationsData: medicationsSlice,
-    immunizationsData: immunizationsSlice
+    immunizationsData: immunizationsSlice,
+    globalSpinnerData: globalSpinnerSlice
   }
 });
 

@@ -12,6 +12,7 @@ import MedicationsPage from "./features/medications/MedicationsPage";
 import ImmunizationsPage from "./features/immunizations/ImmunizationsPage";
 
 import "./App.css";
+import GlobalSpinner from "./features/globalSpinner/GlobalSpinner";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
           limit={3}
           autoClose={3000}
         />
+        <GlobalSpinner />
         <TitleBar />
         <Routes>
           <Route path="/" element={<AuthLanding />} />

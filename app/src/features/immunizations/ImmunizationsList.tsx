@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
@@ -207,11 +206,6 @@ const ImmunizationsList: React.FC<ImmunizationsListProps> = ({
       </Container>
     </>
   );
-};
-
-ImmunizationsList.propTypes = {
-  onDeleteImmunization: PropTypes.func.isRequired,
-  onUpdateImmunization: PropTypes.func.isRequired
 };
 
 export default ImmunizationsList;

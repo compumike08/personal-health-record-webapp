@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { createSelector } from "@reduxjs/toolkit";
 import { Container, Row, Col, Accordion, Button, Modal } from "react-bootstrap";
 import { isNil } from "lodash";
@@ -206,11 +205,6 @@ const MedicationsList: React.FC<MedicationsListProps> = ({
       </Container>
     </>
   );
-};
-
-MedicationsList.propTypes = {
-  onDeleteMedication: PropTypes.func.isRequired,
-  onUpdateMedication: PropTypes.func.isRequired
 };
 
 export default MedicationsList;

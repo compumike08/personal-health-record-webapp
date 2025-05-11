@@ -41,4 +41,12 @@ public class AllergyController {
   ) {
     return allergyService.updateAllergy(allergyDTO, jwtUserDetails);
   }
+
+  @DeleteMapping("/allergy/{allergyUuid}")
+  public AllergyDTO deleteAllergy(
+    @PathVariable String allergyUuid,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return allergyService.deleteAllergy(allergyUuid, jwtUserDetails);
+  }
 }

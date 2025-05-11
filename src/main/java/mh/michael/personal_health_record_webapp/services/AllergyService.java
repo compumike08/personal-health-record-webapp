@@ -152,4 +152,35 @@ public class AllergyService {
 
     return ConvertDTOUtil.convertAllergyToAllergyDTO(updatedAllergy);
   }
+
+  @Transactional
+  public AllergyDTO deleteAllergy(
+    String allergyUuidString,
+    JwtUserDetails jwtUserDetails
+  ) {
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    UUID allergyUuid = UUID.fromString(allergyUuidString);
+
+    Optional<Allergy> optAllergy = allergyRepository.findByAllergyUuid(allergyUuid);
+
+    if (optAllergy.isEmpty()) {
+      log.error("Unable to delete allergy as allergyUuid {} not found", allergyUuid);
+      throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        INTERNAL_SERVER_ERROR_MSG
+      );
+    }
+
+    Allergy allergy = optAllergy.get();
+    UUID allergyPatientUuid = allergy.getPatient().getPatientUuid();
+
+    authorizationUtil.checkUserAuthorizationForPatient(
+      allergyPatientUuid,
+      currentUserUuid
+    );
+
+    allergyRepository.delete(allergy);
+
+    return ConvertDTOUtil.convertAllergyToAllergyDTO(allergy);
+  }
 }

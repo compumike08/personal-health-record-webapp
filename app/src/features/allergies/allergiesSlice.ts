@@ -37,9 +37,6 @@ export const allergiesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getAllergiesForPatientAction.pending, (state) => {
-        return state;
-      })
       .addCase(getAllergiesForPatientAction.fulfilled, (state, action) => {
         state.allegiesList = action.payload.map((alrgy: Allergy) => {
           return {
@@ -47,17 +44,8 @@ export const allergiesSlice = createSlice({
           };
         });
       })
-      .addCase(getAllergiesForPatientAction.rejected, (state) => {
-        return state;
-      })
-      .addCase(createNewAllergyForPatientAction.pending, (state) => {
-        return state;
-      })
       .addCase(createNewAllergyForPatientAction.fulfilled, (state, action) => {
         state.allegiesList.push(Object.assign({}, action.payload));
-      })
-      .addCase(createNewAllergyForPatientAction.rejected, (state) => {
-        return state;
       });
   }
 });

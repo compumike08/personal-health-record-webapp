@@ -4,23 +4,16 @@ import {
   getCurrentUserPatientList,
   getPatientByPatientUuid
 } from "../../api/patientAPI";
-import { RequestStates } from "../../constants/general";
 import { Patient } from "./patient";
 
 interface PaitentsState {
   patientsList: Patient[];
   currentPatient: Patient | null;
-  getPatientsListStatus: RequestStates;
-  createNewPatientStatus: RequestStates;
-  getCurrentPatientStatus: RequestStates;
 }
 
 const initialState: PaitentsState = {
   patientsList: [],
-  currentPatient: null,
-  getPatientsListStatus: RequestStates.IDLE_STATUS,
-  createNewPatientStatus: RequestStates.IDLE_STATUS,
-  getCurrentPatientStatus: RequestStates.IDLE_STATUS
+  currentPatient: null
 };
 
 export const getCurrentUsersPatientsList = createAsyncThunk(
@@ -55,35 +48,14 @@ export const patientsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getCurrentUsersPatientsList.pending, (state) => {
-        state.getPatientsListStatus = RequestStates.LOADING_STATUS;
-      })
       .addCase(getCurrentUsersPatientsList.fulfilled, (state, action) => {
-        state.getPatientsListStatus = RequestStates.IDLE_STATUS;
         state.patientsList = Object.assign([], action.payload);
       })
-      .addCase(getCurrentUsersPatientsList.rejected, (state) => {
-        state.getPatientsListStatus = RequestStates.ERROR_STATUS;
-      })
-      .addCase(createPatient.pending, (state) => {
-        state.createNewPatientStatus = RequestStates.LOADING_STATUS;
-      })
       .addCase(createPatient.fulfilled, (state, action) => {
-        state.createNewPatientStatus = RequestStates.IDLE_STATUS;
         state.patientsList.push(Object.assign({}, action.payload));
       })
-      .addCase(createPatient.rejected, (state) => {
-        state.createNewPatientStatus = RequestStates.ERROR_STATUS;
-      })
-      .addCase(getPatientByPatientUuidAction.pending, (state) => {
-        state.getCurrentPatientStatus = RequestStates.LOADING_STATUS;
-      })
       .addCase(getPatientByPatientUuidAction.fulfilled, (state, action) => {
-        state.getCurrentPatientStatus = RequestStates.IDLE_STATUS;
         state.currentPatient = Object.assign({}, action.payload);
-      })
-      .addCase(getPatientByPatientUuidAction.rejected, (state) => {
-        state.getCurrentPatientStatus = RequestStates.ERROR_STATUS;
       });
   }
 });

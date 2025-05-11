@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import AllergiesPage from "./features/allergies/AllergiesPage";
 import AuthLanding from "./features/auth/AuthLanding";
 import LoginPage from "./features/auth/LoginPage";
 import LogoutPage from "./features/auth/LogoutPage";
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="/newPatient" element={<NewPatient />} />
           <Route path="/immunizations" element={<ImmunizationsPage />} />
           <Route path="/medications" element={<MedicationsPage />} />
+          <Route path="/allergies" element={<AllergiesPage />} />
         </Routes>
       </div>
     </Router>

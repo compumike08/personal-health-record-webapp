@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import allergiesSlice from "./features/allergies/allergiesSlice";
 import authSlice from "./features/auth/authSlice";
 import globalSpinnerSlice from "./features/globalSpinner/globalSpinnerSlice";
 import immunizationsSlice from "./features/immunizations/immunizationsSlice";
@@ -13,7 +14,8 @@ export const store = configureStore({
     patientsData: patientsSlice,
     medicationsData: medicationsSlice,
     immunizationsData: immunizationsSlice,
-    globalSpinnerData: globalSpinnerSlice
+    globalSpinnerData: globalSpinnerSlice,
+    allergiesData: allergiesSlice
   }
 });
 

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { resetAllergiesList } from "../allergies/allergiesSlice";
 import { resetImmunizationsList } from "../immunizations/immunizationsSlice";
 import { resetMedicationsList } from "../medications/medicationsSlice";
 import { resetPatientsData } from "../patients/patientsSlice";
@@ -14,6 +15,7 @@ const LogoutPage = () => {
     dispatch(resetPatientsData());
     dispatch(resetMedicationsList());
     dispatch(resetImmunizationsList());
+    dispatch(resetAllergiesList());
     dispatch(resetAuthData());
     void navigate("/");
   }, [dispatch, navigate]);

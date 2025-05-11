@@ -5,6 +5,7 @@ import { resetAllergiesList } from "../allergies/allergiesSlice";
 import { resetImmunizationsList } from "../immunizations/immunizationsSlice";
 import { resetMedicationsList } from "../medications/medicationsSlice";
 import { resetPatientsData } from "../patients/patientsSlice";
+import { resetUserProfile } from "../users/userProfileSlice";
 import { resetAuthData } from "./authSlice";
 
 const LogoutPage = () => {
@@ -17,6 +18,7 @@ const LogoutPage = () => {
     dispatch(resetImmunizationsList());
     dispatch(resetAllergiesList());
     dispatch(resetAuthData());
+    dispatch(resetUserProfile());
     void navigate("/");
   }, [dispatch, navigate]);
 

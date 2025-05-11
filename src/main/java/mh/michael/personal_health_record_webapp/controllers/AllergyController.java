@@ -33,4 +33,12 @@ public class AllergyController {
   ) {
     return allergyService.createAllergy(newAllergyRequestDTO, jwtUserDetails);
   }
+
+  @PutMapping("/allergy")
+  public AllergyDTO updateAllergy(
+    @RequestBody AllergyDTO allergyDTO,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return allergyService.updateAllergy(allergyDTO, jwtUserDetails);
+  }
 }

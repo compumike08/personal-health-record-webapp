@@ -4,6 +4,7 @@ import static mh.michael.personal_health_record_webapp.constants.Constants.INTER
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import mh.michael.personal_health_record_webapp.dto.AllergyDTO;
@@ -108,5 +109,47 @@ public class AllergyService {
     Allergy savedAllergy = allergyRepository.save(newAllergy);
 
     return ConvertDTOUtil.convertAllergyToAllergyDTO(savedAllergy);
+  }
+
+  @Transactional
+  public AllergyDTO updateAllergy(AllergyDTO allergyDTO, JwtUserDetails jwtUserDetails) {
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    UUID allergyUuid = UUID.fromString(allergyDTO.getAllergyUuid());
+
+    Optional<Allergy> optAllergy = allergyRepository.findByAllergyUuid(allergyUuid);
+
+    if (optAllergy.isEmpty()) {
+      log.error("Unable to update allergy as allergyUuid {} not found", allergyUuid);
+      throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        INTERNAL_SERVER_ERROR_MSG
+      );
+    }
+
+    Allergy allergy = optAllergy.get();
+    UUID allergyPatientUuid = allergy.getPatient().getPatientUuid();
+
+    authorizationUtil.checkUserAuthorizationForPatient(
+      allergyPatientUuid,
+      currentUserUuid
+    );
+
+    validateAllergyName(allergyDTO.getAllergyName());
+
+    Date allergyStartedDate = GeneralUtil.parseDate(
+      allergyDTO.getAllergyStartedDate(),
+      null
+    );
+    Date allergyEndedDate = GeneralUtil.parseDate(allergyDTO.getAllergyEndedDate(), null);
+
+    allergy.setAllergyName(allergyDTO.getAllergyName());
+    allergy.setIsCurrentAllergy(allergyDTO.getIsCurrentAllergy());
+    allergy.setAllergyStartedDate(allergyStartedDate);
+    allergy.setAllergyEndedDate(allergyEndedDate);
+    allergy.setDescription(allergyDTO.getDescription());
+
+    Allergy updatedAllergy = allergyRepository.save(allergy);
+
+    return ConvertDTOUtil.convertAllergyToAllergyDTO(updatedAllergy);
   }
 }

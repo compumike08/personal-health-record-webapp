@@ -1,10 +1,10 @@
-import { SerializedError } from "@reduxjs/toolkit";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import { isNil } from "lodash";
 import { useEffect, useState } from "react";
+import { SerializedError } from "@reduxjs/toolkit";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { isNil } from "lodash";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DATE_FORMAT } from "../../constants/general";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { Allergy, NewAllergy } from "./allergies";

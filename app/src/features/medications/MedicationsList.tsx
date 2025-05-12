@@ -1,7 +1,7 @@
-import { createSelector } from "@reduxjs/toolkit";
-import { isNil } from "lodash";
 import { useEffect, useState } from "react";
+import { createSelector } from "@reduxjs/toolkit";
 import { Accordion, Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { isNil } from "lodash";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RootState } from "../../store";
 import { getMedicationsForPatientAction } from "./medicationsSlice";

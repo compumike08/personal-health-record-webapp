@@ -1,7 +1,7 @@
-import { SerializedError } from "@reduxjs/toolkit";
 import { useState } from "react";
-import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
+import { SerializedError } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
+import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "../../hooks";
 import { registerUserAction } from "./authSlice";

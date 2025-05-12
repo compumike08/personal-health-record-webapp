@@ -2,17 +2,32 @@ import { SerializedError } from "@reduxjs/toolkit";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { isNil } from "lodash";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Button, Col, Container, Form, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { DATE_FORMAT } from "../../constants/general";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { NewAllergy } from "./allergies";
-import { createNewAllergyForPatientAction } from "./allergiesSlice";
+import { Allergy, NewAllergy } from "./allergies";
+import {
+  createNewAllergyForPatientAction,
+  updateAllergyAction
+} from "./allergiesSlice";
 
 dayjs.extend(customParseFormat);
 
-const NewUpdateAllergy = () => {
+interface NewUpdateAllergyProps {
+  submitComplete: (() => void) | undefined;
+  isUpdate: boolean;
+  currentAllergy: Allergy | null;
+}
+
+const NewUpdateAllergy: React.FC<NewUpdateAllergyProps> = ({
+  submitComplete = () => {
+    /* noop */
+  },
+  isUpdate = false,
+  currentAllergy = null
+}) => {
   const dispatch = useAppDispatch();
 
   const [backendErrorMsg, setBackendErrorMsg] = useState<
@@ -48,6 +63,39 @@ const NewUpdateAllergy = () => {
     setAllergyDescription("");
   };
 
+  useEffect(() => {
+    if (isUpdate && !isNil(currentAllergy)) {
+      setAllergyName(currentAllergy.allergyName);
+      setIsCurrentAllergy(currentAllergy.isCurrentAllergy);
+      setAllergyStartedDateString(
+        currentAllergy.allergyStartedDate
+          ? currentAllergy.allergyStartedDate
+          : ""
+      );
+      setAllergyEndedDateString(
+        currentAllergy.allergyEndedDate ? currentAllergy.allergyEndedDate : ""
+      );
+      setAllergyDescription(
+        currentAllergy.description ? currentAllergy.description : ""
+      );
+
+      reinitializeValidationErrors();
+    } else if (isUpdate && isNil(currentAllergy)) {
+      reinitializeInputs();
+      reinitializeValidationErrors();
+      submitComplete();
+    }
+  }, [currentAllergy, isUpdate, submitComplete]);
+
+  const handleCancel = () => {
+    reinitializeInputs();
+    reinitializeValidationErrors();
+
+    if (isUpdate) {
+      submitComplete();
+    }
+  };
+
   const handleSubmit = () => {
     const handler = async () => {
       let isError = false;
@@ -77,23 +125,41 @@ const NewUpdateAllergy = () => {
         setIsAllergyEndedDateStringError(true);
       }
 
-      if (!isError && currentPatient) {
+      if (!isError) {
         try {
-          const data: NewAllergy = {
-            patientUuid: currentPatient.patientUuid,
-            allergyName,
-            allergyStartedDate: allergyStartedDateString,
-            allergyEndedDate: allergyEndedDateString,
-            isCurrentAllergy: isCurrentAllergy,
-            description: allergyDescription
-          };
+          if (isUpdate && currentAllergy) {
+            const data: Allergy = {
+              allergyUuid: currentAllergy?.allergyUuid,
+              allergyName,
+              allergyStartedDate: allergyStartedDateString,
+              allergyEndedDate: allergyEndedDateString,
+              isCurrentAllergy: isCurrentAllergy,
+              description: allergyDescription
+            };
 
-          await dispatch(createNewAllergyForPatientAction(data)).unwrap();
+            await dispatch(updateAllergyAction(data)).unwrap();
+          } else if (!isUpdate && currentPatient) {
+            const data: NewAllergy = {
+              patientUuid: currentPatient.patientUuid,
+              allergyName,
+              allergyStartedDate: allergyStartedDateString,
+              allergyEndedDate: allergyEndedDateString,
+              isCurrentAllergy: isCurrentAllergy,
+              description: allergyDescription
+            };
+
+            await dispatch(createNewAllergyForPatientAction(data)).unwrap();
+          } else {
+            throw new Error(
+              "Invalid combination of states when attempting to dispatch create or update allergy action"
+            );
+          }
 
           reinitializeValidationErrors();
           reinitializeInputs();
 
-          toast.success("Medication saved successfully");
+          toast.success("Allergy saved successfully");
+          submitComplete();
         } catch (err) {
           const error = err as SerializedError;
           toast.error(error.message);
@@ -114,7 +180,7 @@ const NewUpdateAllergy = () => {
     <Container>
       <Row>
         <Col>
-          <h6>New Allergy</h6>
+          <h6>{isUpdate ? "Update Allergy" : "New Allergy"}</h6>
         </Col>
       </Row>
       {backendErrorMsg && (
@@ -202,8 +268,17 @@ const NewUpdateAllergy = () => {
             </Form.Group>
             <Row>
               <Col>
+                {isUpdate && (
+                  <Button
+                    variant="secondary"
+                    onClick={handleCancel}
+                    className="mt-3"
+                  >
+                    Cancel
+                  </Button>
+                )}
                 <Button
-                  className="mt-3"
+                  className={isUpdate ? "mt-3 ms-2" : "mt-3"}
                   variant="primary"
                   onClick={handleSubmit}
                 >

@@ -1,14 +1,29 @@
 import { createSelector, SerializedError } from "@reduxjs/toolkit";
 import { isNil } from "lodash";
-import { useEffect } from "react";
-import { Accordion, Col, Container, Row } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Accordion, Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RootState } from "../../store";
-import { getAllergiesForPatientAction } from "./allergiesSlice";
+import {
+  deleteAllergyAction,
+  getAllergiesForPatientAction
+} from "./allergiesSlice";
 
-const AllergiesList = () => {
+interface AllergiesListProps {
+  onUpdateAllergy: (allergyUuid: string) => void;
+}
+
+const AllergiesList: React.FC<AllergiesListProps> = ({ onUpdateAllergy }) => {
   const dispatch = useAppDispatch();
+
+  const [isShowDeleteModal, setIsShowDeleteModal] = useState(false);
+  const [deleteAllergyUuid, setDeleteAllergyUuid] = useState<string | null>(
+    null
+  );
+  const [deleteAllergyName, setDeleteAllergyName] = useState<string | null>(
+    null
+  );
 
   const selectAllergiesList = (state: RootState) =>
     state.allergiesData.allegiesList;
@@ -54,8 +69,54 @@ const AllergiesList = () => {
     void handler();
   }, [dispatch, currentPatient]);
 
+  const hideConfirmDelete = () => {
+    setIsShowDeleteModal(false);
+    setDeleteAllergyUuid(null);
+    setDeleteAllergyName(null);
+  };
+
+  const onConfirmDeleteAllergy = (allergyUuid: string, allergyName: string) => {
+    setDeleteAllergyUuid(allergyUuid);
+    setDeleteAllergyName(allergyName);
+    setIsShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    const handler = async () => {
+      if (deleteAllergyUuid) {
+        try {
+          await dispatch(deleteAllergyAction(deleteAllergyUuid)).unwrap();
+          hideConfirmDelete();
+        } catch (err) {
+          const error = err as SerializedError;
+          toast.error(error.message);
+        }
+      } else {
+        throw new Error(
+          "deleteAllergyUuid was null when handleConfirmDelete was called"
+        );
+      }
+    };
+
+    void handler();
+  };
+
   return (
     <>
+      <Modal show={isShowDeleteModal} onHide={hideConfirmDelete}>
+        <Modal.Header>Delete Allergy</Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete {deleteAllergyName}?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={hideConfirmDelete}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleConfirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
       <Container>
         <Row>
           <Col>
@@ -107,6 +168,28 @@ const AllergiesList = () => {
                               <span className="fw-bold">Description:</span>{" "}
                               {alrgy.description}
                             </p>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <Button
+                              variant="primary"
+                              onClick={() => onUpdateAllergy(alrgy.allergyUuid)}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              variant="danger"
+                              className="ms-2"
+                              onClick={() => {
+                                onConfirmDeleteAllergy(
+                                  alrgy.allergyUuid,
+                                  alrgy.allergyName
+                                );
+                              }}
+                            >
+                              Delete
+                            </Button>
                           </Col>
                         </Row>
                       </Container>

@@ -1,7 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   createNewAllergyForPatient,
-  getAllergiesForPatient
+  deleteAllergy,
+  getAllergiesForPatient,
+  updateAllergy
 } from "../../api/allergiesAPI";
 import { Allergy, NewAllergy } from "./allergies";
 
@@ -27,6 +29,20 @@ export const createNewAllergyForPatientAction = createAsyncThunk(
   }
 );
 
+export const updateAllergyAction = createAsyncThunk(
+  "allergies/updateAllergyAction",
+  async (data: Allergy) => {
+    return await updateAllergy(data);
+  }
+);
+
+export const deleteAllergyAction = createAsyncThunk(
+  "allergies/deleteAllergyAction",
+  async (allergyUuid: string) => {
+    return await deleteAllergy(allergyUuid);
+  }
+);
+
 export const allergiesSlice = createSlice({
   name: "allergies",
   initialState,
@@ -46,6 +62,18 @@ export const allergiesSlice = createSlice({
       })
       .addCase(createNewAllergyForPatientAction.fulfilled, (state, action) => {
         state.allegiesList.push(Object.assign({}, action.payload));
+      })
+      .addCase(updateAllergyAction.fulfilled, (state, action) => {
+        const index = state.allegiesList.findIndex(
+          (alrgy) => alrgy.allergyUuid === action.payload.allergyUuid
+        );
+        state.allegiesList[index] = action.payload;
+      })
+      .addCase(deleteAllergyAction.fulfilled, (state, action) => {
+        const index = state.allegiesList.findIndex(
+          (alrgy) => alrgy.allergyUuid === action.payload.allergyUuid
+        );
+        state.allegiesList.splice(index, 1);
       });
   }
 });

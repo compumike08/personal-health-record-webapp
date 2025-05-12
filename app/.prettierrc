@@ -1,6 +1,5 @@
 {
   "trailingComma": "none",
   "tabWidth": 2,
-  "endOfLine": "auto",
-  "plugins": ["prettier-plugin-organize-imports"]
+  "endOfLine": "auto"
 }

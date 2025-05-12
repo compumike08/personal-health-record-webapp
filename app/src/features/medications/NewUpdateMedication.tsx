@@ -76,10 +76,7 @@ const NewUpdateMedication: React.FC<NewUpdateMedicationProps> = ({
     } else if (isUpdate && isNil(currentMedication)) {
       reinitializeInputs();
       reinitializeValidationErrors();
-
-      if (isUpdate) {
-        submitComplete();
-      }
+      submitComplete();
     }
   }, [isUpdate, currentMedication, submitComplete]);
 

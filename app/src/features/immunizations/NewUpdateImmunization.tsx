@@ -72,10 +72,7 @@ const NewUpdateImmunization: React.FC<NewUpdateImmunizationProps> = ({
     } else if (isUpdate && isNil(currentImmunization)) {
       reinitializeInputs();
       reinitializeValidationErrors();
-
-      if (isUpdate) {
-        submitComplete();
-      }
+      submitComplete();
     }
   }, [isUpdate, currentImmunization, submitComplete]);
 

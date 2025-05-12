@@ -43,7 +43,7 @@ const AllergiesList = () => {
         try {
           await dispatch(
             getAllergiesForPatientAction(currentPatient.patientUuid)
-          );
+          ).unwrap();
         } catch (err) {
           const error = err as SerializedError;
           toast.error(error.message);

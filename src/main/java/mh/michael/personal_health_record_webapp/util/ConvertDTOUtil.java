@@ -3,6 +3,7 @@ package mh.michael.personal_health_record_webapp.util;
 import static mh.michael.personal_health_record_webapp.constants.Constants.DATE_FORMAT_STRING;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -159,6 +160,65 @@ public class ConvertDTOUtil {
     return allergyList
       .stream()
       .map(ConvertDTOUtil::convertAllergyToAllergyDTO)
+      .collect(Collectors.toList());
+  }
+
+  public static LabResultDTO convertLabResultToLabResultDTO(LabResult labResult) {
+    return LabResultDTO.builder()
+      .labResultName(labResult.getLabResultName())
+      .labResultNotes(labResult.getLabResultNotes())
+      .labResultDate(
+        labResult.getLabResultDate() == null
+          ? ""
+          : dateFormatter.format(labResult.getLabResultDate())
+      )
+      .labResultValue(labResult.getLabResultValue())
+      .labResultUuid(labResult.getLabResultUuid().toString())
+      .labPanelUuid(
+        labResult.getLabPanel() == null
+          ? null
+          : labResult.getLabPanel().getLabPanelUuid().toString()
+      )
+      .labResultProviderLocation(labResult.getLabResultProviderLocation())
+      .labResultProviderName(labResult.getLabResultProviderName())
+      .labResultReferenceRange(labResult.getLabResultReferenceRange())
+      .build();
+  }
+
+  public static List<LabResultDTO> convertLabResultListToLabResultDTOList(
+    List<LabResult> labResultList
+  ) {
+    return labResultList != null
+      ? labResultList
+        .stream()
+        .map(ConvertDTOUtil::convertLabResultToLabResultDTO)
+        .collect(Collectors.toList())
+      : new ArrayList<>();
+  }
+
+  public static LabPanelDTO convertLabPanelToLabPanelDTO(LabPanel labPanel) {
+    return LabPanelDTO.builder()
+      .labPanelUuid(labPanel.getLabPanelUuid().toString())
+      .labPanelName(labPanel.getLabPanelName())
+      .labPanelDate(
+        labPanel.getLabPanelDate() == null
+          ? ""
+          : dateFormatter.format(labPanel.getLabPanelDate())
+      )
+      .labResultsList(
+        ConvertDTOUtil.convertLabResultListToLabResultDTOList(
+          labPanel.getLabPanelResults()
+        )
+      )
+      .build();
+  }
+
+  public static List<LabPanelDTO> convertLabPanelListToLabPanelDTOList(
+    List<LabPanel> labPanelList
+  ) {
+    return labPanelList
+      .stream()
+      .map(ConvertDTOUtil::convertLabPanelToLabPanelDTO)
       .collect(Collectors.toList());
   }
 }

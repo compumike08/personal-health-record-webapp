@@ -13,7 +13,6 @@ import mh.michael.personal_health_record_webapp.model.LabPanel;
 import mh.michael.personal_health_record_webapp.model.LabResult;
 import mh.michael.personal_health_record_webapp.model.Patient;
 import mh.michael.personal_health_record_webapp.repositories.LabPanelRepository;
-import mh.michael.personal_health_record_webapp.repositories.LabResultRepository;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.ConvertDTOUtil;
@@ -28,16 +27,13 @@ import org.springframework.web.server.ResponseStatusException;
 public class LabPanelService {
 
   private final LabPanelRepository labPanelRepository;
-  private final LabResultRepository labResultRepository;
   private final AuthorizationUtil authorizationUtil;
 
   public LabPanelService(
     LabPanelRepository labPanelRepository,
-    LabResultRepository labResultRepository,
     AuthorizationUtil authorizationUtil
   ) {
     this.labPanelRepository = labPanelRepository;
-    this.labResultRepository = labResultRepository;
     this.authorizationUtil = authorizationUtil;
   }
 
@@ -107,8 +103,6 @@ public class LabPanelService {
       .patient(patient)
       .build();
 
-    LabPanel savedLabPanel = labPanelRepository.save(newLabPanel);
-
     List<LabResult> newLabResultList = new ArrayList<>();
 
     newLabPanelRequestDTO
@@ -127,15 +121,15 @@ public class LabPanelService {
           .labResultNotes(labResultRequestDTO.getLabResultNotes())
           .labResultDate(labResultDate)
           .patient(patient)
-          .labPanel(savedLabPanel)
+          .labPanel(newLabPanel)
           .build();
 
         newLabResultList.add(newLabResult);
       });
 
-    List<LabResult> savedLabResultsList = labResultRepository.saveAll(newLabResultList);
+    newLabPanel.setLabPanelResults(newLabResultList);
 
-    savedLabPanel.setLabPanelResults(savedLabResultsList);
+    LabPanel savedLabPanel = labPanelRepository.save(newLabPanel);
 
     return ConvertDTOUtil.convertLabPanelToLabPanelDTO(savedLabPanel);
   }

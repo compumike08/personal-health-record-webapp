@@ -16,7 +16,6 @@ import mh.michael.personal_health_record_webapp.repositories.LabPanelRepository;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.util.AuthorizationUtil;
 import mh.michael.personal_health_record_webapp.util.ConvertDTOUtil;
-import mh.michael.personal_health_record_webapp.util.GeneralUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,13 +46,14 @@ public class LabPanelService {
 
     authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
 
-    List<LabPanel> labPanelList =
-      labPanelRepository.findByPatient_PatientUuidOrderByLabPanelDateDesc(patientUuid);
+    List<LabPanel> labPanelList = labPanelRepository.findByPatient_PatientUuid(
+      patientUuid
+    );
 
     return ConvertDTOUtil.convertLabPanelListToLabPanelDTOList(labPanelList);
   }
 
-  private Date validateLabPanelInputs(NewLabPanelRequestDTO newLabPanelRequestDTO) {
+  private void validateLabPanelInputs(NewLabPanelRequestDTO newLabPanelRequestDTO) {
     if (newLabPanelRequestDTO.getLabPanelName().isEmpty()) {
       log.debug("Validation Error: labPanelName is empty");
       throw new ResponseStatusException(
@@ -62,7 +62,16 @@ public class LabPanelService {
       );
     }
 
-    return GeneralUtil.parseDate(newLabPanelRequestDTO.getLabPanelDate(), null);
+    if (
+      newLabPanelRequestDTO.getLabResultsList() == null ||
+      newLabPanelRequestDTO.getLabResultsList().isEmpty()
+    ) {
+      log.debug("Validation Error: labResultsList is empty");
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "You must add at least one lab result to the lab panel"
+      );
+    }
   }
 
   @Transactional
@@ -93,12 +102,11 @@ public class LabPanelService {
         labResultRequestDTO.setPatientUuid(patient.getPatientUuid().toString());
       });
 
-    Date labPanelDate = validateLabPanelInputs(newLabPanelRequestDTO);
+    validateLabPanelInputs(newLabPanelRequestDTO);
 
     LabPanel newLabPanel = LabPanel.builder()
       .labPanelUuid(UUID.randomUUID())
       .labPanelName(newLabPanelRequestDTO.getLabPanelName())
-      .labPanelDate(labPanelDate)
       .labPanelResults(new ArrayList<>())
       .patient(patient)
       .build();

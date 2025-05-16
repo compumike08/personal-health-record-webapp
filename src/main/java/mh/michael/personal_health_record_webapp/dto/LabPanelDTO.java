@@ -12,6 +12,5 @@ public class LabPanelDTO {
 
   private String labPanelUuid;
   private String labPanelName;
-  private String labPanelDate;
   private List<LabResultDTO> labResultsList;
 }

@@ -24,9 +24,6 @@ public class LabPanel {
   @Column(nullable = false, length = 300)
   private String labPanelName;
 
-  @Column(nullable = false)
-  private Date labPanelDate;
-
   @OneToMany(mappedBy = "labPanel", cascade = CascadeType.ALL)
   private List<LabResult> labPanelResults;
 

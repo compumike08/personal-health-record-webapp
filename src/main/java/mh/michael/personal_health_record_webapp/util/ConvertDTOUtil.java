@@ -200,11 +200,6 @@ public class ConvertDTOUtil {
     return LabPanelDTO.builder()
       .labPanelUuid(labPanel.getLabPanelUuid().toString())
       .labPanelName(labPanel.getLabPanelName())
-      .labPanelDate(
-        labPanel.getLabPanelDate() == null
-          ? ""
-          : dateFormatter.format(labPanel.getLabPanelDate())
-      )
       .labResultsList(
         ConvertDTOUtil.convertLabResultListToLabResultDTOList(
           labPanel.getLabPanelResults()

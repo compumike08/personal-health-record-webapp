@@ -11,7 +11,6 @@ import lombok.*;
 public class NewLabPanelRequestDTO {
 
   private String labPanelName;
-  private String labPanelDate;
   private String patientUuid;
   private List<NewLabResultRequestDTO> labResultsList;
 }

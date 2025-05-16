@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LabPanelRepository extends JpaRepository<LabPanel, Long> {
-  List<LabPanel> findByPatient_PatientUuidOrderByLabPanelDateDesc(UUID patientUuid);
+  List<LabPanel> findByPatient_PatientUuid(UUID patientUuid);
   Optional<LabPanel> findByLabPanelUuid(UUID labPanelUuid);
 }

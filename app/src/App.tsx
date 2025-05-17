@@ -14,6 +14,7 @@ import TitleBar from "./features/TitleBar/TitleBar";
 import UserProfile from "./features/users/UserProfile";
 
 import "./App.css";
+import LabPage from "./features/labPage/LabPage";
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="/immunizations" element={<ImmunizationsPage />} />
           <Route path="/medications" element={<MedicationsPage />} />
           <Route path="/allergies" element={<AllergiesPage />} />
+          <Route path="/labs" element={<LabPage />} />
         </Routes>
       </div>
     </Router>

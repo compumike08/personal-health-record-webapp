@@ -128,11 +128,21 @@ const TitleBar = () => {
                           Medications
                         </NavDropdown.Item>
                       </Nav.Link>
+                      <Nav.Link eventKey="7" className="p-0" as="div">
+                        <NavDropdown.Item
+                          className="nav-link"
+                          onClick={() => {
+                            void navigate("/labs");
+                          }}
+                        >
+                          Labs
+                        </NavDropdown.Item>
+                      </Nav.Link>
                     </NavDropdown>
                   </Nav.Link>
                 )}
                 <Nav.Item>
-                  <Nav.Link eventKey="7" className="p-0" as="div">
+                  <Nav.Link eventKey="8" className="p-0" as="div">
                     <NavLink className="nav-link" to="/newPatient">
                       New Patient
                     </NavLink>

@@ -6,6 +6,8 @@ import immunizationsSlice from "./features/immunizations/immunizationsSlice";
 import medicationsSlice from "./features/medications/medicationsSlice";
 import patientsSlice from "./features/patients/patientsSlice";
 import userProfileSlice from "./features/users/userProfileSlice";
+import labResultsSlice from "./features/labPage/labResults/labResultsSlice";
+import labPanelsSlice from "./features/labPage/labPanels/labPanelsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,7 +17,9 @@ export const store = configureStore({
     medicationsData: medicationsSlice,
     immunizationsData: immunizationsSlice,
     globalSpinnerData: globalSpinnerSlice,
-    allergiesData: allergiesSlice
+    allergiesData: allergiesSlice,
+    labResultsData: labResultsSlice,
+    labPanelsData: labPanelsSlice
   }
 });
 

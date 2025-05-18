@@ -4,14 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import mh.michael.personal_health_record_webapp.dto.NewUserRequestDTO;
 import mh.michael.personal_health_record_webapp.dto.UserDTO;
-import mh.michael.personal_health_record_webapp.exceptions.AuthenticationException;
+import mh.michael.personal_health_record_webapp.exceptions.UserAuthenticationException;
 import mh.michael.personal_health_record_webapp.security.JwtTokenRequest;
 import mh.michael.personal_health_record_webapp.security.JwtTokenResponse;
 import mh.michael.personal_health_record_webapp.security.JwtTokenUtil;
 import mh.michael.personal_health_record_webapp.security.JwtUserDetails;
 import mh.michael.personal_health_record_webapp.services.UserService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +43,7 @@ public class JwtAuthenticationRestController {
   @PostMapping(value = "/api/authenticate")
   public ResponseEntity<?> createAuthenticationToken(
     @RequestBody JwtTokenRequest authenticationRequest
-  ) throws AuthenticationException {
+  ) throws UserAuthenticationException {
     Authentication authentication = authenticationManager.authenticate(
       new UsernamePasswordAuthenticationToken(
         authenticationRequest.getUsername(),
@@ -75,10 +74,5 @@ public class JwtAuthenticationRestController {
   @PostMapping(value = "/api/registerUser")
   public UserDTO registerNewUser(@RequestBody NewUserRequestDTO newUserRequestDTO) {
     return userService.createNewUser(newUserRequestDTO);
-  }
-
-  @ExceptionHandler({ AuthenticationException.class })
-  public ResponseEntity<String> handleAuthenticationException(AuthenticationException e) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
   }
 }

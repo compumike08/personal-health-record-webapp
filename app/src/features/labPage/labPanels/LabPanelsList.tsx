@@ -164,11 +164,11 @@ const LabPanelsList = () => {
     const index = labResultFormList.findIndex((form) => form.formId === formId);
     const newLabResultForm = Object.assign({}, labResultFormList[index]);
     assignProperty(newLabResultForm, fieldName, value);
-    const updatedFormList = labResultFormList.filter(
-      (form) => form.formId !== formId
-    );
-    updatedFormList.push(newLabResultForm);
-    setLabResultFormList(updatedFormList);
+    const clonedFormList = labResultFormList.map((form) => ({
+      ...form
+    }));
+    clonedFormList.splice(index, 1, newLabResultForm);
+    setLabResultFormList(clonedFormList);
   };
 
   const abortSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
@@ -247,13 +247,6 @@ const LabPanelsList = () => {
                       onChange={(evt) => setLabPanelDate(evt.target.value)}
                     />
                   </Form.Group>
-                  <Row>
-                    <Col>
-                      <Button className="mt-2 mb-2" onClick={addLabResultForm}>
-                        Add Lab Result Form
-                      </Button>
-                    </Col>
-                  </Row>
                   {labResultFormList.map((labResultForm) => {
                     return (
                       <Row key={`lab-result-form-${labResultForm.formId}`}>
@@ -386,6 +379,13 @@ const LabPanelsList = () => {
                       </Row>
                     );
                   })}
+                  <Row>
+                    <Col>
+                      <Button className="mt-2 mb-2" onClick={addLabResultForm}>
+                        Add New Lab Result Form
+                      </Button>
+                    </Col>
+                  </Row>
                 </Form>
               </Col>
             </Row>

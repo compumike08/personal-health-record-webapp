@@ -29,10 +29,7 @@ public class GeneralUtil {
       } catch (ParseException e) {
         log.error("Unable to parse date {}", dateString);
         log.error(e.getMessage(), e);
-        throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR,
-          INTERNAL_SERVER_ERROR_MSG
-        );
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid date");
       }
     }
 

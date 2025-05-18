@@ -119,6 +119,15 @@ public class LabPanelService {
         Date labResultDate = LabResultService.validateNewLabResultRequestInputs(
           labResultRequestDTO
         );
+
+        if (labResultDate == null) {
+          log.error("Validation Error: labResultDate is empty");
+          throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "You must enter a Lab Panel Date"
+          );
+        }
+
         LabResult newLabResult = LabResult.builder()
           .labResultReferenceRange(labResultRequestDTO.getLabResultReferenceRange())
           .labResultName(labResultRequestDTO.getLabResultName())

@@ -117,7 +117,8 @@ public class LabPanelService {
       .getLabResultsList()
       .forEach(labResultRequestDTO -> {
         Date labResultDate = LabResultService.validateNewLabResultRequestInputs(
-          labResultRequestDTO
+          labResultRequestDTO.getLabResultName(),
+          labResultRequestDTO.getLabResultDate()
         );
 
         if (labResultDate == null) {

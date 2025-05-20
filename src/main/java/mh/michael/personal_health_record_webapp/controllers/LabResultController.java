@@ -33,4 +33,20 @@ public class LabResultController {
   ) {
     return labResultService.createLabResult(newLabResultRequestDTO, jwtUserDetails);
   }
+
+  @PutMapping("/labResult")
+  public LabResultDTO updateLabResult(
+    @RequestBody LabResultDTO labResultDTO,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return labResultService.updateLabResult(labResultDTO, jwtUserDetails);
+  }
+
+  @DeleteMapping("/labResult/{labResultUuid}")
+  public LabResultDTO deleteLabResult(
+    @PathVariable("labResultUuid") String labResultUuid,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return labResultService.deleteLabResult(labResultUuid, jwtUserDetails);
+  }
 }

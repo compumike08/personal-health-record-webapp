@@ -197,4 +197,46 @@ public class LabPanelService {
 
     return ConvertDTOUtil.convertLabPanelToLabPanelDTO(savedLabPanel);
   }
+
+  @Transactional
+  public LabPanelDTO deleteLabPanel(
+    String labPanelUuidString,
+    JwtUserDetails jwtUserDetails
+  ) {
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    UUID labPanelUuid = UUID.fromString(labPanelUuidString);
+
+    Optional<LabPanel> labPanelOptional = labPanelRepository.findByLabPanelUuid(
+      labPanelUuid
+    );
+
+    if (labPanelOptional.isEmpty()) {
+      log.error(
+        "Unable to update lab panel as labPanelUuid {} was not found",
+        labPanelUuid
+      );
+      throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        INTERNAL_SERVER_ERROR_MSG
+      );
+    }
+
+    LabPanel labPanel = labPanelOptional.get();
+    UUID patientUuid = labPanel.getPatient().getPatientUuid();
+
+    authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+
+    labPanel
+      .getLabPanelResults()
+      .forEach(labResult -> {
+        labResultService.deleteLabResult(
+          labResult.getLabResultUuid().toString(),
+          jwtUserDetails
+        );
+      });
+
+    labPanelRepository.delete(labPanel);
+
+    return ConvertDTOUtil.convertLabPanelToLabPanelDTO(labPanel);
+  }
 }

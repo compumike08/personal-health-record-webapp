@@ -41,4 +41,12 @@ public class LabPanelController {
   ) {
     return labPanelService.updateLabPanel(labPanelDTO, jwtUserDetails);
   }
+
+  @DeleteMapping("/labPanel/{labPanelUuid}")
+  public LabPanelDTO deleteLabPanel(
+    @PathVariable("labPanelUuid") String labPanelUuid,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return labPanelService.deleteLabPanel(labPanelUuid, jwtUserDetails);
+  }
 }

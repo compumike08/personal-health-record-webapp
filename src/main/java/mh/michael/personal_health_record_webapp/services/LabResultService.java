@@ -180,6 +180,13 @@ public class LabResultService {
   }
 
   @Transactional
+  public LabResultDTO deleteLabResultTransactional(
+    String labResultUuidString,
+    JwtUserDetails jwtUserDetails
+  ) {
+    return deleteLabResult(labResultUuidString, jwtUserDetails);
+  }
+
   public LabResultDTO deleteLabResult(
     String labResultUuidString,
     JwtUserDetails jwtUserDetails

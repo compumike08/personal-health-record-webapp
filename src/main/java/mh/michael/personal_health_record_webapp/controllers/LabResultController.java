@@ -47,6 +47,6 @@ public class LabResultController {
     @PathVariable("labResultUuid") String labResultUuid,
     @AuthenticationPrincipal JwtUserDetails jwtUserDetails
   ) {
-    return labResultService.deleteLabResult(labResultUuid, jwtUserDetails);
+    return labResultService.deleteLabResultTransactional(labResultUuid, jwtUserDetails);
   }
 }

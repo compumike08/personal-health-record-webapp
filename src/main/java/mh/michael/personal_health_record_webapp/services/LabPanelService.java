@@ -2,10 +2,7 @@ package mh.michael.personal_health_record_webapp.services;
 
 import static mh.michael.personal_health_record_webapp.constants.Constants.INTERNAL_SERVER_ERROR_MSG;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import mh.michael.personal_health_record_webapp.dto.LabPanelDTO;
 import mh.michael.personal_health_record_webapp.dto.NewLabPanelRequestDTO;
@@ -27,13 +24,16 @@ public class LabPanelService {
 
   private final LabPanelRepository labPanelRepository;
   private final AuthorizationUtil authorizationUtil;
+  private final LabResultService labResultService;
 
   public LabPanelService(
     LabPanelRepository labPanelRepository,
-    AuthorizationUtil authorizationUtil
+    AuthorizationUtil authorizationUtil,
+    LabResultService labResultService
   ) {
     this.labPanelRepository = labPanelRepository;
     this.authorizationUtil = authorizationUtil;
+    this.labResultService = labResultService;
   }
 
   @Transactional
@@ -53,8 +53,8 @@ public class LabPanelService {
     return ConvertDTOUtil.convertLabPanelListToLabPanelDTOList(labPanelList);
   }
 
-  private void validateLabPanelInputs(NewLabPanelRequestDTO newLabPanelRequestDTO) {
-    if (newLabPanelRequestDTO.getLabPanelName().isEmpty()) {
+  private <T> void validateLabPanelInputs(String labPanelName, List<T> labResultsList) {
+    if (labPanelName.isEmpty()) {
       log.debug("Validation Error: labPanelName is empty");
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
@@ -62,16 +62,59 @@ public class LabPanelService {
       );
     }
 
-    if (
-      newLabPanelRequestDTO.getLabResultsList() == null ||
-      newLabPanelRequestDTO.getLabResultsList().isEmpty()
-    ) {
+    if (labResultsList == null || labResultsList.isEmpty()) {
       log.debug("Validation Error: labResultsList is empty");
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST,
         "You must add at least one lab result to the lab panel"
       );
     }
+  }
+
+  @Transactional
+  public LabPanelDTO updateLabPanel(
+    LabPanelDTO labPanelDTO,
+    JwtUserDetails jwtUserDetails
+  ) {
+    UUID currentUserUuid = jwtUserDetails.getUserUuid();
+    UUID labPanelUuid = UUID.fromString(labPanelDTO.getLabPanelUuid());
+
+    Optional<LabPanel> labPanelOptional = labPanelRepository.findByLabPanelUuid(
+      labPanelUuid
+    );
+
+    if (labPanelOptional.isEmpty()) {
+      log.error(
+        "Unable to update lab panel as labPanelUuid {} was not found",
+        labPanelUuid
+      );
+      throw new ResponseStatusException(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        INTERNAL_SERVER_ERROR_MSG
+      );
+    }
+
+    LabPanel labPanel = labPanelOptional.get();
+    UUID patientUuid = labPanel.getPatient().getPatientUuid();
+
+    authorizationUtil.checkUserAuthorizationForPatient(patientUuid, currentUserUuid);
+
+    validateLabPanelInputs(
+      labPanelDTO.getLabPanelName(),
+      labPanelDTO.getLabResultsList()
+    );
+
+    labPanel.setLabPanelName(labPanelDTO.getLabPanelName());
+
+    labPanelDTO
+      .getLabResultsList()
+      .forEach(labResultDTO -> {
+        labResultService.updateLabResult(labResultDTO, jwtUserDetails);
+      });
+
+    LabPanel updatedLabPanel = labPanelRepository.save(labPanel);
+
+    return ConvertDTOUtil.convertLabPanelToLabPanelDTO(updatedLabPanel);
   }
 
   @Transactional
@@ -102,7 +145,10 @@ public class LabPanelService {
         labResultRequestDTO.setPatientUuid(patient.getPatientUuid().toString());
       });
 
-    validateLabPanelInputs(newLabPanelRequestDTO);
+    validateLabPanelInputs(
+      newLabPanelRequestDTO.getLabPanelName(),
+      newLabPanelRequestDTO.getLabResultsList()
+    );
 
     LabPanel newLabPanel = LabPanel.builder()
       .labPanelUuid(UUID.randomUUID())

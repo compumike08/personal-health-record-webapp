@@ -119,6 +119,13 @@ public class LabResultService {
   }
 
   @Transactional
+  public LabResultDTO updateLabResultTransactional(
+    LabResultDTO labResultDTO,
+    JwtUserDetails jwtUserDetails
+  ) {
+    return updateLabResult(labResultDTO, jwtUserDetails);
+  }
+
   public LabResultDTO updateLabResult(
     LabResultDTO labResultDTO,
     JwtUserDetails jwtUserDetails

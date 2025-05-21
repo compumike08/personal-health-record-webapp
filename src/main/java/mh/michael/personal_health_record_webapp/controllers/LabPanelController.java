@@ -33,4 +33,12 @@ public class LabPanelController {
   ) {
     return labPanelService.createLabPanel(newLabPanelRequestDTO, jwtUserDetails);
   }
+
+  @PutMapping("/labPanel")
+  public LabPanelDTO updateLabPanel(
+    @RequestBody LabPanelDTO labPanelDTO,
+    @AuthenticationPrincipal JwtUserDetails jwtUserDetails
+  ) {
+    return labPanelService.updateLabPanel(labPanelDTO, jwtUserDetails);
+  }
 }

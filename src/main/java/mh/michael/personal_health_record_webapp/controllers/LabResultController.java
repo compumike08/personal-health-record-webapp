@@ -39,7 +39,7 @@ public class LabResultController {
     @RequestBody LabResultDTO labResultDTO,
     @AuthenticationPrincipal JwtUserDetails jwtUserDetails
   ) {
-    return labResultService.updateLabResult(labResultDTO, jwtUserDetails);
+    return labResultService.updateLabResultTransactional(labResultDTO, jwtUserDetails);
   }
 
   @DeleteMapping("/labResult/{labResultUuid}")
